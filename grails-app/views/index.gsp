@@ -18,11 +18,11 @@
 					</div>
 					<div class="row form-group" style="display: block;">
 						<label for="reportThreads" class="col-md-3">Report model threads:</label>
-						<input type="number" min="1" max="20" value="1" id="reportThreads" name="reportThreads" class="form-control col-md-2" placeholder="default: 1" size="">
+						<input type="number" min="1" max="20" value="1" id="reportThreads" name="reportThreads" class="form-control col-md-2">
 					</div>
 					<div class="row form-group" style="display: block;">
 						<label for="questionThreads" class="col-md-3">Question model threads:</label>
-						<input type="number" min="1" max="20" value="1" name="questionThreads" class="form-control col-md-2" placeholder="default: 1" size="">
+						<input type="number" min="1" max="20" value="1" id="questionThreads" name="questionThreads" class="form-control col-md-2">
 					</div>
 					<div class="row form-group" style="display: block;">
 						<input type="submit" class="btn btn-primary" value="Test GET Reports" id="test-get-reports"/>

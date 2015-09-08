@@ -1,0 +1,36 @@
+/*
+* This is a manifest file that'll be compiled into application.css, which will include all the files
+* listed below.
+*
+* Any CSS file within this directory can be referenced here using a relative path.
+*
+* You're free to add application-wide styles to this file and they'll appear at the top of the
+* compiled file, but it's generally better to create a new file per style scope.
+*
+*= require bootstrap
+*= require_self
+*/
+
+div.row {margin: 20px 0;}
+
+div.results
+{
+	transition: all 1s;
+}
+
+.header.well 
+{
+	margin-top: 20px;
+	padding: 10px 20px;
+	background-color: lightblue;
+}
+
+.header h4
+{
+	text-shadow: 1px 1px 6px darkgrey;
+}
+
+input.btn:hover
+{
+	text-shadow: 1px 1px 4px tomato;
+}

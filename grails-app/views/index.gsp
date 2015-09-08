@@ -17,6 +17,14 @@
 						<input type="text" id="portNumber" name="port" class="form-control" placeholder="default: 8091">
 					</div>
 					<div class="row form-group" style="display: block;">
+						<label for="reportThreads" class="col-md-3">Report model threads:</label>
+						<input type="text" id="reportThreads" name="reportThreads" class="form-control col-md-2" placeholder="default: 1" size="10">
+					</div>
+					<div class="row form-group" style="display: block;">
+						<label for="questionThreads" class="col-md-3">Question model threads:</label>
+						<input type="text" id="questionThreads" name="questionThreads" class="form-control col-md-2" placeholder="default: 1" size="10">
+					</div>
+					<div class="row form-group" style="display: block;">
 						<input type="submit" class="btn btn-primary" value="Test GET Reports" id="test-get-reports"/>
 					</div>
 				</g:formRemote>
@@ -29,6 +37,8 @@
 					<div class="form-group">
 						<input type="hidden" id="hostModels" name="host">
 						<input type="hidden" id="portModels" name="port">
+						<input type="hidden" id="reportThreads1" name="reportThreads">
+						<input type="hidden" id="questionThreads1" name="questionThreads">
 						<input type="submit" class="btn btn-primary" value="Test GET Report Models" id="test-get-report-models"/>
 					</div>
 				</g:formRemote>
@@ -42,6 +52,8 @@
 					<div class="form-group">
 						<input type="hidden" id="hostQuestions" name="host">
 						<input type="hidden" id="portQuestions" name="port">
+						<input type="hidden" id="reportThreads2" name="reportThreads">
+						<input type="hidden" id="questionThreads2" name="questionThreads">
 						<input type="submit" class="btn btn-primary" value="Test GET Report Models with Questions" id="test-get-report-models-questions"/>
 					</div>
 				</g:formRemote>

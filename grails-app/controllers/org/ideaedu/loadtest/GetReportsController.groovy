@@ -16,8 +16,8 @@ class GetReportsController
 	def jsonContent = 'application/json;charset=utf-8'
 	
 	def static SURVEY_REPORTS_THREADS = 1
-	def static REPORT_MODEL_THREADS = 10
-	def static QUESTIONS_MODEL_THREADS = 10
+	def static REPORT_MODEL_THREADS = 1
+	def static QUESTIONS_MODEL_THREADS = 1
 	
 	def getBaseUrl(host, port)
 	{
@@ -114,10 +114,16 @@ class GetReportsController
 	
 	def loadTestExistingReportModels()
 	{
+		println params
 		def url = getBaseUrl(params.host, params.port) + '/v1/reports'
 		
 		def surveyIds = getSurveyIds()
 		println "Found ${surveyIds.size()} unique survey IDs"
+		
+		def rthreads = params.reportThreads ?: REPORT_MODEL_THREADS
+		rthreads = rthreads as int
+		
+		println "Utilizing ${rthreads} thread${rthreads > 1 ? 's' : ''} to retrieve the report models"
 		
 		println "Starting timer..."
 		def start = System.currentTimeMillis()
@@ -146,7 +152,7 @@ class GetReportsController
 		
 		println "Found ${reportIds.size()} unique report IDs"
 		
-		GParsPool.withPool REPORT_MODEL_THREADS, {
+		GParsPool.withPool rthreads, {
 			reportIds.eachParallel
 			{
 				response = restBuilder.get(url[0..-2] + '/' + it + '/model') {
@@ -164,17 +170,24 @@ class GetReportsController
 		def duration = end - start
 		def reportCount = reportIds.size()
 		def rate = reportCount*1000L*3600L/duration
-		println duration
-		println rate
+
 		render template: 'loadTestExistingReports', model: [status: status, reportCount: reportCount, duration: duration, rate: (int)rate, test: 'reportModels']
 	}
 	
 	def loadTestExistingReportModelsAndQuestions()
 	{
+		println params
 		def url = getBaseUrl(params.host, params.port) + '/v1/reports'
 		
 		def surveyIds = getSurveyIds()
 		println "Found ${surveyIds.size()} unique survey IDs"
+		
+		def rthreads = params.reportThreads ?: REPORT_MODEL_THREADS
+		def qthreads = params.questionThreads ?: QUESTIONS_MODEL_THREADS
+		rthreads = rthreads as int
+		qthreads = qthreads as int
+		
+		println "Utilizing ${rthreads} thread${rthreads > 1 ? 's' : ''} to retrieve the report models and ${qthreads} thread${qthreads > 1 ? 's' : ''} to retrieve the question models"
 		
 		println "Starting timer..."
 		def start = System.currentTimeMillis()
@@ -205,7 +218,7 @@ class GetReportsController
 		
 		def reportModelsAndQuestions = [:]
 		
-		GParsPool.withPool REPORT_MODEL_THREADS, {
+		GParsPool.withPool rthreads, {
 			reportIds.eachParallel
 			{
 				response = restBuilder.get(url[0..-2] + '/' + it + '/model') {
@@ -220,7 +233,7 @@ class GetReportsController
 		
 		def reportsWithNoData = 0
 		
-		GParsPool.withPool REPORT_MODEL_THREADS, {
+		GParsPool.withPool rthreads, {
 			reportModelsAndQuestions.eachParallel
 			{
 				keyValuePair ->
@@ -229,7 +242,7 @@ class GetReportsController
 				if (!dataPoints) reportsWithNoData++
 				else
 				{
-					GParsPool.withPool QUESTIONS_MODEL_THREADS, {
+					GParsPool.withPool qthreads, {
 						dataPoints.response_data_points.eachParallel
 						{
 							dpoint ->
@@ -260,8 +273,7 @@ class GetReportsController
 		def duration = end - start
 		def reportCount = reportIds.size()
 		def rate = reportCount*1000L*3600L/duration
-		println duration
-		println rate
+
 		render template: 'loadTestExistingReports', model: [status: status, reportCount: reportCount, duration: duration, rate: (int)rate, reportsWithNoData: reportsWithNoData, test: 'reportModelQuestions']
 	}
 }

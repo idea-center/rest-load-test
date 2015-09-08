@@ -51,4 +51,14 @@ $(document).ready(function()
 		$('#portModels').val($(this).val());
 		$('#portQuestions').val($(this).val());
 	});
+	
+	$('#reportThreads').change(function(){
+		$('#reportThreads1').val($(this).val());
+		$('#reportThreads2').val($(this).val());
+	});
+	
+	$('#questionThreads').change(function(){
+		$('#questionThreads1').val($(this).val());
+		$('#questionThreads2').val($(this).val());
+	});
 });

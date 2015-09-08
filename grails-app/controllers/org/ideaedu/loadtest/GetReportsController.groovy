@@ -2,6 +2,7 @@ package org.ideaedu.loadtest
 
 import grails.plugins.rest.client.RestBuilder
 import groovyx.gpars.GParsPool
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * This controller will perform load tests on the IDEA-REST-SERVER GET ../reports... end-point
@@ -122,6 +123,7 @@ class GetReportsController
 		
 		def rthreads = params.reportThreads ?: REPORT_MODEL_THREADS
 		rthreads = rthreads as int
+		if (rthreads < 1) rthreads = REPORT_MODEL_THREADS
 		
 		println "Utilizing ${rthreads} thread${rthreads > 1 ? 's' : ''} to retrieve the report models"
 		
@@ -137,16 +139,18 @@ class GetReportsController
 		GParsPool.withPool SURVEY_REPORTS_THREADS, {
 			surveyIds.eachParallel
 			{
-				response = restBuilder.get(url + '?survey_id=' + it + '&type=ALL') {
-					header 'X-IDEA-APPNAME', app
-					header 'X-IDEA-KEY', appKey
+				synchronized(reportIds)
+				{
+					response = restBuilder.get(url + '?survey_id=' + it + '&type=ALL') {
+						header 'X-IDEA-APPNAME', app
+						header 'X-IDEA-KEY', appKey
+					}
+					
+					status = response.status
+					json = response.json
+					
+					reportIds += json.data.collect {it.id}
 				}
-				
-				status = response.status
-				json = response.json
-				
-				def ids = json.data.collect {it.id}
-				reportIds += ids
 			}
 		}
 		
@@ -162,6 +166,8 @@ class GetReportsController
 				
 				status = response.status
 				json = response.json
+				
+				// not doing anything with the data yet; if we do, synchronization might be needed
 			}
 		}
 		
@@ -180,12 +186,16 @@ class GetReportsController
 		def url = getBaseUrl(params.host, params.port) + '/v1/reports'
 		
 		def surveyIds = getSurveyIds()
+		
 		println "Found ${surveyIds.size()} unique survey IDs"
 		
 		def rthreads = params.reportThreads ?: REPORT_MODEL_THREADS
 		def qthreads = params.questionThreads ?: QUESTIONS_MODEL_THREADS
 		rthreads = rthreads as int
 		qthreads = qthreads as int
+		
+		if (rthreads < 1) rthreads = REPORT_MODEL_THREADS
+		if (qthreads < 1) qthreads = QUESTIONS_MODEL_THREADS
 		
 		println "Utilizing ${rthreads} thread${rthreads > 1 ? 's' : ''} to retrieve the report models and ${qthreads} thread${qthreads > 1 ? 's' : ''} to retrieve the question models"
 		
@@ -198,19 +208,22 @@ class GetReportsController
 		def json
 		def reportIds = [] as Set
 		
+		// this should stay at 1 so synchronization should not be necessary
 		GParsPool.withPool SURVEY_REPORTS_THREADS, {
 			surveyIds.eachParallel
 			{
-				response = restBuilder.get(url + '?survey_id=' + it + '&type=ALL') {
-					header 'X-IDEA-APPNAME', app
-					header 'X-IDEA-KEY', appKey
+				synchronized(reportIds)
+				{
+					response = restBuilder.get(url + '?survey_id=' + it + '&type=ALL') {
+						header 'X-IDEA-APPNAME', app
+						header 'X-IDEA-KEY', appKey
+					}
+					
+					status = response.status
+					json = response.json.data as List
+					
+					reportIds += json.collect {it.id}
 				}
-				
-				status = response.status
-				json = response.json
-				
-				def ids = json.data.collect {it.id}
-				reportIds += ids
 			}
 		}
 		
@@ -221,13 +234,18 @@ class GetReportsController
 		GParsPool.withPool rthreads, {
 			reportIds.eachParallel
 			{
-				response = restBuilder.get(url[0..-2] + '/' + it + '/model') {
-					header 'X-IDEA-APPNAME', app
-					header 'X-IDEA-KEY', appKey
+				synchronized(reportModelsAndQuestions)
+				{
+					response = restBuilder.get(url[0..-2] + '/' + it + '/model') {
+						header 'X-IDEA-APPNAME', app
+						header 'X-IDEA-KEY', appKey
+					}
+					
+					status = response.status
+					
+					// key is report id, value is aggregate data
+					reportModelsAndQuestions.putAt(it.toString(), response.json)
 				}
-				
-				status = response.status
-				reportModelsAndQuestions.putAt(it.toString(), response.json)
 			}
 		}
 		
@@ -237,13 +255,17 @@ class GetReportsController
 			reportModelsAndQuestions.eachParallel
 			{
 				keyValuePair ->
-				def dataPoints = keyValuePair?.value?.aggregate_data
+				def aggData = keyValuePair?.value?.aggregate_data
 				
-				if (!dataPoints) reportsWithNoData++
+				//println "$keyValuePair.key : $keyValuePair.value"
+				
+				if (!aggData) reportsWithNoData++
 				else
 				{
+					def dataPoints = Collections.synchronizedList(aggData.response_data_points)
+					
 					GParsPool.withPool qthreads, {
-						dataPoints.response_data_points.eachParallel
+						dataPoints.eachParallel
 						{
 							dpoint ->
 							def qUrl = url[0..-2] + '/' + keyValuePair.key + '/model/' + dpoint?.question_id
@@ -262,6 +284,7 @@ class GetReportsController
 							}
 							
 							json = response.json
+							// not doing anything with the data yet
 						}
 					}
 				}

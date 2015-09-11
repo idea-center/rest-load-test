@@ -22,9 +22,11 @@ grails.project.fork = [
 ]
 
 grails.project.dependency.resolver = "maven" // or ivy
-grails.project.dependency.resolution = {
+grails.project.dependency.resolution = 
+{
     // inherit Grails' default dependencies
-    inherits("global") {
+    inherits("global")
+	{
         // specify dependency exclusions here; for example, uncomment this to disable ehcache:
         // excludes 'ehcache'
     }
@@ -32,7 +34,8 @@ grails.project.dependency.resolution = {
     checksums true // Whether to verify checksums on resolve
     legacyResolve false // whether to do a secondary resolve on plugin installation, not advised and here for backwards compatibility
 
-    repositories {
+    repositories
+	{
         inherits true // Whether to inherit repository definitions from plugins
 
         grailsPlugins()
@@ -46,14 +49,20 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.jboss.com/maven2/"
     }
 
-    dependencies {
+    dependencies
+	{
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes e.g.
         // runtime 'mysql:mysql-connector-java:5.1.29'
         // runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
         test "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
+		compile 'idea:REST_MODELS:1.9.0-SNAPSHOT'
+		//compile 'com.google.caliper:caliper:1.0-beta-2'
+		//compile 'ch.ledcom.tomcat.valves:tomcat-valves:0.1'
+		//compile 'eu.danieldk.dictomaton:dictomaton:1.1.1'
     }
 
-    plugins {
+    plugins
+	{
         // plugins for the build system only
         build ":tomcat:7.0.55"
 

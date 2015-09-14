@@ -61,4 +61,34 @@ $(document).ready(function()
 		$('#questionThreads1').val($(this).val());
 		$('#questionThreads2').val($(this).val());
 	});
+	
+	$('#test-get-surveys').click(function(){
+		$(this).attr('disabled', 'disabled');
+		$('#get-surveys-results').html('');
+		$('#getSurveysForm').submit();
+		$('#get-surveys-spinner').removeClass('hide');
+	});
+	
+	$('#test-post-surveys').click(function(){
+		$(this).attr('disabled', 'disabled');
+		$('#post-surveys-results').html('');
+		$('#postSurveysForm').submit();
+		$('#post-surveys-spinner').removeClass('hide');
+	});
+	
+	$('#hostName1').change(function(){
+		$('#hostName2').val($(this).val());
+	});
+	
+	$('#portNumber1').change(function(){
+		$('#portNumber2').val($(this).val());
+	});
+	
+	$('#surveyThreads').change(function(){
+		$('#surveyThreads1').val($(this).val());
+	});
+	
+	$('#surveyCount').change(function(){
+		$('#surveyCount1').val($(this).val());
+	});
 });

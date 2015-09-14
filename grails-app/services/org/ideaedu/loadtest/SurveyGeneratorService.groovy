@@ -23,7 +23,7 @@ class SurveyGeneratorService
 	public static final int CHAIR_INFO_FORM_ID = 13
 	public static final int CHAIR_RATER_FORM_ID = 14
 
-	private static final int MAX_ASKED = 2
+	private static final int MAX_ASKED = 50
 	private static final int MAX_ID = 9999
 
 	/**

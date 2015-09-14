@@ -108,8 +108,6 @@ class GetReportsController
 			}
 		}
 		
-		//println 'Exiting getSurveyIds()'
-		
 		return surveyIds
 	}
 	
@@ -136,6 +134,7 @@ class GetReportsController
 		def json
 		def reportIds = [] as Set
 		
+		// this should be done with 1 thread only, it is fast enough
 		GParsPool.withPool SURVEY_REPORTS_THREADS, {
 			surveyIds.eachParallel
 			{

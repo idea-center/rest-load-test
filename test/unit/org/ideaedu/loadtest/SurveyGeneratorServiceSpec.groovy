@@ -4,9 +4,6 @@ import grails.test.mixin.TestFor
 import idea.data.rest.RESTSurvey
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
 @TestFor(SurveyGeneratorService)
 class SurveyGeneratorServiceSpec extends Specification
 {
@@ -22,17 +19,35 @@ class SurveyGeneratorServiceSpec extends Specification
 	{
 		expect:
 		def survey = service.buildRESTSurvey(1, 9, null, true)
-		println survey
+		//println survey
+		survey.id == 0
+		survey.groupId == 0
+		survey.srcId.toInteger() > 0
+		survey.srcGroupId.toInteger() > 0
+		survey.year == 2015
+		!survey.includesGapAnalysis
+		survey.institutionId == 1029
+		survey.institutionName == 'IDEA Center'
+		survey.infoForm.respondents.size() == 1
+		survey.raterForm.respondents.size() > 1
+	}
+	
+	void "test build a large number of surveys"()
+	{
+		given:
+		def count = 5000
+		def surveys = []
 		
-		/*when:
-		def propsMap = survey.properties
-		propsMap.remove('metaClass')
-		propsMap.remove('class')
-		propsMap.remove('gson')
+		expect:
+		for (i in 1..count)
+		{
+			surveys << service.buildRESTSurvey(1, 9, null, true)
+		}
 		
-		def clone = new RESTSurvey(propsMap)
-		
-		then:
-		println clone*/
+		surveys.size() == 5000
+				
+		cleanup: 
+		surveys.clear()
+		System.gc()
 	}
 }

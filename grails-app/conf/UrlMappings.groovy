@@ -6,8 +6,6 @@ class UrlMappings {
                 // apply constraints here
             }
         }
-		
-		//"/getReports" (controller: 'getReports', action: 'loadTestExistingReports')
 
         "/"(view:"/index")
         "500"(view:'/error')

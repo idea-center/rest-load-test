@@ -61,7 +61,7 @@ class GetReportsController
 		
 		if (status != 200)
 		{
-			render template: 'error', model: [status: status]
+			render template: 'error', model: [status: status, test: 'reports']
 			return
 		}
 		
@@ -73,7 +73,7 @@ class GetReportsController
 		render template: 'loadTestExistingReports', model: [status: status, reportCount: reportCount, duration: duration, rate: (int)rate, test: 'reports']
 	}
 	
-	def getSurveyIds()
+	def getSurveyIds(test)
 	{
 		println 'Looking for survey IDs...'
 		
@@ -96,6 +96,13 @@ class GetReportsController
 				}
 				
 				status = response.status
+				
+				if (status != 200)
+				{
+					render template: 'error', model: [status: status, test: test]
+					return
+				}
+				
 				json = response.json
 				pageResults = json.data.collect {it.survey_id}
 				
@@ -105,6 +112,8 @@ class GetReportsController
 			catch(e)
 			{
 				status = 'Connection timed out'
+				println status
+				break
 			}
 		}
 		
@@ -116,7 +125,14 @@ class GetReportsController
 		println params
 		def url = getBaseUrl(params.host, params.port) + '/v1/reports'
 		
-		def surveyIds = getSurveyIds()
+		def surveyIds = getSurveyIds('reportModels')
+		
+		if (!surveyIds)
+		{
+			render template: 'error', model: [status: 'Connection timed out', test: 'reportModels']
+			return
+		}
+		
 		println "Found ${surveyIds.size()} unique survey IDs"
 		
 		def rthreads = params.reportThreads ?: REPORT_MODEL_THREADS
@@ -146,6 +162,13 @@ class GetReportsController
 					}
 					
 					status = response.status
+					
+					if (status != 200)
+					{
+						render template: 'error', model: [status: status, test: 'reportModels']
+						return
+					}
+					
 					json = response.json
 					
 					reportIds += json.data.collect {it.id}
@@ -164,6 +187,13 @@ class GetReportsController
 				}
 				
 				status = response.status
+				
+				if (status != 200)
+				{
+					render template: 'error', model: [status: status, test: 'reportModels']
+					return
+				}
+				
 				json = response.json
 				
 				// not doing anything with the data yet; if we do, synchronization might be needed
@@ -184,7 +214,13 @@ class GetReportsController
 		println params
 		def url = getBaseUrl(params.host, params.port) + '/v1/reports'
 		
-		def surveyIds = getSurveyIds()
+		def surveyIds = getSurveyIds('reportModelQuestions')
+		
+		if (!surveyIds)
+		{
+			render template: 'error', model: [status: 'Connection timed out', test: 'reportModelQuestions']
+			return
+		}
 		
 		println "Found ${surveyIds.size()} unique survey IDs"
 		
@@ -219,6 +255,13 @@ class GetReportsController
 					}
 					
 					status = response.status
+					
+					if (status != 200)
+					{
+						render template: 'error', model: [status: status, test: 'reportModelQuestions']
+						return
+					}
+					
 					json = response.json.data as List
 					
 					reportIds += json.collect {it.id}
@@ -241,6 +284,12 @@ class GetReportsController
 					}
 					
 					status = response.status
+					
+					if (status != 200)
+					{
+						render template: 'error', model: [status: status, test: 'reportModelQuestions']
+						return
+					}
 					
 					// key is report id, value is aggregate data
 					reportModelsAndQuestions.putAt(it.toString(), response.json)
@@ -280,6 +329,9 @@ class GetReportsController
 							catch(e)
 							{
 								status = 'Connection timed out'
+								render template: 'error', model: [status: status, test: 'reportModelQuestions']
+								return
+								
 							}
 							
 							json = response.json

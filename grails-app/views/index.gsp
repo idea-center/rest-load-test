@@ -18,11 +18,11 @@
 							<input type="text" id="portNumber" name="port" class="form-control" placeholder="default: 8091">
 						</div>
 						<div class="row form-group" style="display: block;">
-							<label for="reportThreads" class="col-md-3">Report model threads:</label>
+							<label for="reportThreads" class="col-md-6">Report model threads:</label>
 							<input type="number" min="1" max="20" value="1" id="reportThreads" name="reportThreads" class="form-control col-md-2">
 						</div>
 						<div class="row form-group" style="display: block;">
-							<label for="questionThreads" class="col-md-3">Question model threads:</label>
+							<label for="questionThreads" class="col-md-6">Question model threads:</label>
 							<input type="number" min="1" max="20" value="1" id="questionThreads" name="questionThreads" class="form-control col-md-2">
 						</div>
 						<div class="row form-group" style="display: block;">
@@ -73,11 +73,11 @@
 							<input type="text" id="portNumber1" name="port" class="form-control" placeholder="default: 8091">
 						</div>
 						<div class="row form-group" style="display: block;">
-							<label for="surveyThreads" class="col-md-3">Survey threads:</label>
+							<label for="surveyThreads" class="col-md-6">Survey threads:</label>
 							<input type="number" min="1" max="20" value="1" id="surveyThreads" name="surveyThreads" class="form-control col-md-2">
 						</div>
 						<div class="row form-group" style="display: block;">
-							<label for="surveyCount" class="col-md-3">Surveys to POST:</label>
+							<label for="surveyCount" class="col-md-6">Surveys to POST:</label>
 							<input type="number" min="1" max="1000" value="1" id="surveyCount" name="surveyCount" class="form-control col-md-2">
 						</div>
 						<div class="row form-group" style="display: block;">

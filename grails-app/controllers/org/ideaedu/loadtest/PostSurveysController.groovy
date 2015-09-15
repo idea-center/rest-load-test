@@ -46,40 +46,34 @@ class PostSurveysController
 		println "Starting timer..."
 		def start = System.currentTimeMillis()
 		
-		GParsPool.withPool sthreads, {
+		GParsPool.withPool sthreads,
+		{
 			sampleSurveys.eachParallel
-			{
+			{ 
 				surveyData ->
-				
-				// don't think synchronization is necessary here
-				//synchronized(sampleSurveys)
-				//{
-					//println surveyData.toJSON()
-					
-					try
+
+				try
+				{
+					response = restBuilder.post(url)
 					{
-						response = restBuilder.post(url) {
-							header 'X-IDEA-APPNAME', app
-							header 'X-IDEA-KEY', appKey
-							header 'Content-Type', jsonContent
-							json 	surveyData.toJSON()
-						}
-						
-						status = response.status
-						
-						if (status == 200) savedSurveys++
-						else errorSurveys++
+						header 'X-IDEA-APPNAME', app
+						header 'X-IDEA-KEY', appKey
+						header 'Content-Type', jsonContent
+						json 	surveyData.toJSON()
 					}
-					catch(e)
-					{
-						status = 'Connection timed out'
-					}
-					
-					//println "status: $status"
-				//}
+
+					status = response.status
+
+					if (status == 200) savedSurveys++
+					else errorSurveys++
+				}
+				catch(e)
+				{
+					status = 'Connection timed out'
+				}
 			}
 		}
-		
+
 		def end = System.currentTimeMillis()
 		println "Ending timer"
 		
@@ -118,7 +112,7 @@ class PostSurveysController
 		
 		if (status != 200)
 		{
-			render template: 'error', model: [status: status]
+			render template: 'error', model: [status: status, test: 'surveys']
 			return
 		}
 		

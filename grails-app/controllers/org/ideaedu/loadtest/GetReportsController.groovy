@@ -311,8 +311,6 @@ class GetReportsController
 				keyValuePair ->
 				def aggData = keyValuePair?.value?.aggregate_data
 				
-				//println "$keyValuePair.key : $keyValuePair.value"
-				
 				if (!aggData) reportsWithNoData++
 				else
 				{
@@ -335,9 +333,6 @@ class GetReportsController
 							catch(e)
 							{
 								status = 'Connection timed out'
-								render template: 'error', model: [status: status, test: 'reportModelQuestions']
-								return
-								
 							}
 							
 							json = response.json

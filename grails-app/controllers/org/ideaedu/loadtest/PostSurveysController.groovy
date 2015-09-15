@@ -82,7 +82,9 @@ class PostSurveysController
 		def duration = end - start
 		def rate = savedSurveys*1000L*3600L/duration
 		
-		println sampleSurveys.size()
+		sampleSurveys.clear()
+		System.gc()
+		
 		render template: 'postSurveys', model: [status: status, surveyCount: savedSurveys, errorSurveys: errorSurveys, duration: duration, rate: (int)rate, test: 'postSurveys']
 	}
 	
@@ -123,8 +125,6 @@ class PostSurveysController
 		def surveyCount = json.data.size()
 		def duration = end - start
 		def rate = surveyCount*1000L*3600L/duration
-		
-		println surveyCount
 		
 		render template: 'postSurveys', model: [status: status, surveyCount: surveyCount, totalSurveys: totalSurveys, duration: duration, rate: (int)rate, test: 'surveys']
 	}

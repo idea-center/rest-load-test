@@ -26,6 +26,10 @@
 							<input type="number" min="1" max="20" value="1" id="questionThreads" name="questionThreads" class="form-control col-md-2">
 						</div>
 						<div class="row form-group" style="display: block;">
+							<label for="reportCount" class="col-md-6">Max survey id's to use:</label>
+							<input type="number" min="1" max="500" value="50" id="reportCount" name="reportCount" class="form-control col-md-2">
+						</div>
+						<div class="row form-group" style="display: block;">
 							<input type="submit" class="btn btn-primary" value="Test GET Reports" id="test-get-reports"/>
 						</div>
 					</g:formRemote>
@@ -36,10 +40,11 @@
 				<div class="row">
 					<g:formRemote class="form-inline" name="getReportModelsForm" id="getReportModelsForm" url="[controller: 'getReports', action: 'loadTestExistingReportModels']" method="GET" update="get-report-models-results">
 						<div class="form-group">
-							<input type="hidden" id="hostModels" name="host">
-							<input type="hidden" id="portModels" name="port">
-							<input type="hidden" id="reportThreads1" name="reportThreads">
-							<input type="hidden" id="questionThreads1" name="questionThreads">
+							<input type="hidden" id="hostModels" name="host" value="localhost">
+							<input type="hidden" id="portModels" name="port" value="8091">
+							<input type="hidden" id="reportThreads1" name="reportThreads" value="1">
+							<input type="hidden" id="questionThreads1" name="questionThreads" value="1">
+							<input type="hidden" id="reportCount1" name="reportCount" value="50">
 							<input type="submit" class="btn btn-primary" value="Test GET Report Models" id="test-get-report-models"/>
 						</div>
 					</g:formRemote>
@@ -51,10 +56,11 @@
 					<g:formRemote class="form-inline" name="getReportModelsQuestionsForm" id="getReportModelsQuestionsForm" url="[controller: 'getReports', action: 'loadTestExistingReportModelsAndQuestions']" 
 									method="GET" update="get-report-models-questions-results">
 						<div class="form-group">
-							<input type="hidden" id="hostQuestions" name="host">
-							<input type="hidden" id="portQuestions" name="port">
-							<input type="hidden" id="reportThreads2" name="reportThreads">
-							<input type="hidden" id="questionThreads2" name="questionThreads">
+							<input type="hidden" id="hostQuestions" name="host" value="localhost">
+							<input type="hidden" id="portQuestions" name="port" value="8091">
+							<input type="hidden" id="reportThreads2" name="reportThreads" value="1">
+							<input type="hidden" id="questionThreads2" name="questionThreads" value="1">
+							<input type="hidden" id="reportCount2" name="reportCount" value="50">
 							<input type="submit" class="btn btn-primary" value="Test GET Report Models with Questions" id="test-get-report-models-questions"/>
 						</div>
 					</g:formRemote>
@@ -77,8 +83,8 @@
 							<input type="number" min="1" max="20" value="1" id="surveyThreads" name="surveyThreads" class="form-control col-md-2">
 						</div>
 						<div class="row form-group" style="display: block;">
-							<label for="surveyCount" class="col-md-6">Surveys to POST:</label>
-							<input type="number" min="1" max="1000" value="1" id="surveyCount" name="surveyCount" class="form-control col-md-2">
+							<label for="surveyCount" class="col-md-6">Number of surveys to POST:</label>
+							<input type="number" min="1" max="5000" value="100" id="surveyCount" name="surveyCount" class="form-control col-md-2">
 						</div>
 						<div class="row form-group" style="display: block;">
 							<input type="submit" class="btn btn-primary" value="Test GET Surveys" id="test-get-surveys"/>
@@ -91,10 +97,10 @@
 				<div class="row">
 					<g:formRemote class="form-inline" name="postSurveysForm" id="postSurveysForm" url="[controller: 'postSurveys', action: 'loadTestPostSurveys']" method="POST" update="post-surveys-results">
 						<div class="form-group">
-							<input type="hidden" id="hostName2" name="host">
-							<input type="hidden" id="portNumber2" name="port">
-							<input type="hidden" id="surveyThreads1" name="surveyThreads">
-							<input type="hidden" id="surveyCount1" name="surveyCount">
+							<input type="hidden" id="hostName2" name="host" value="localhost">
+							<input type="hidden" id="portNumber2" name="port" value="8091">
+							<input type="hidden" id="surveyThreads1" name="surveyThreads" value="1">
+							<input type="hidden" id="surveyCount1" name="surveyCount" value="100">
 							<input type="submit" class="btn btn-primary" value="Test POST Surveys" id="test-post-surveys"/>
 						</div>
 					</g:formRemote>

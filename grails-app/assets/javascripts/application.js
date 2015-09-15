@@ -62,6 +62,11 @@ $(document).ready(function()
 		$('#questionThreads2').val($(this).val());
 	});
 	
+	$('#reportCount').change(function(){
+		$('#reportCount1').val($(this).val());
+		$('#reportCount2').val($(this).val());
+	});
+	
 	$('#test-get-surveys').click(function(){
 		$(this).attr('disabled', 'disabled');
 		$('#get-surveys-results').html('');

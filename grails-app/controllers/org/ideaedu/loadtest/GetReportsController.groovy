@@ -19,6 +19,7 @@ class GetReportsController
 	def static SURVEY_REPORTS_THREADS = 1
 	def static REPORT_MODEL_THREADS = 1
 	def static QUESTIONS_MODEL_THREADS = 1
+	def static MAX_REPORTS_TO_GET = 100
 	
 	def getBaseUrl(host, port)
 	{
@@ -37,6 +38,7 @@ class GetReportsController
 	
 	def loadTestExistingReports()
 	{
+		println params
 		def url = getBaseUrl(params.host, params.port) + '/v1/reports'
 		
 		def start = System.currentTimeMillis()
@@ -84,7 +86,11 @@ class GetReportsController
 		def status
 		def json
 		
-		while (pageResults != [])
+		def maxReports = params.reportCount ?: MAX_REPORTS_TO_GET
+		maxReports = maxReports as int
+		if (maxReports < 1) maxReports = MAX_REPORTS_TO_GET
+		
+		while (surveyIds.size() < maxReports && pageResults != [])
 		{
 			def url = getUrlForPage(getBaseUrl(params.host, params.port) + "/v1/reports", page)
 			

@@ -15,6 +15,7 @@ class PostSurveysController
 	
 	def static SURVEY_REPORTS_THREADS = 1
 	def static SURVEY_COUNT = 1
+	def static MAX_SURVEYS_TO_POST = 5000
 
 	def loadTestPostSurveys()
 	{
@@ -25,6 +26,7 @@ class PostSurveysController
 		def surveyCount = params.surveyCount ?: SURVEY_COUNT
 		surveyCount = surveyCount as int
 		if (surveyCount < 1) surveyCount = SURVEY_COUNT
+		if (surveyCount > MAX_SURVEYS_TO_POST) surveyCount = MAX_SURVEYS_TO_POST
 		
 		def sthreads = params.surveyThreads ?: SURVEY_REPORTS_THREADS
 		sthreads = sthreads as int
@@ -41,7 +43,7 @@ class PostSurveysController
 		def savedSurveys = 0
 		def errorSurveys = 0
 		
-		println "Using $sthreads thread(s) to post surveys"
+		println "Using $sthreads thread(s) to post ${surveyCount} surveys"
 		
 		println "Starting timer..."
 		def start = System.currentTimeMillis()

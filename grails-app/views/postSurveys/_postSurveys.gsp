@@ -9,7 +9,9 @@
 </g:else>
 
 <g:if test="${test == 'surveys'}">
-	<span>Total number of surveys: ${surveyCount}</span>
+	<span>Total number of surveys: ${totalSurveys}</span>
+	<br>
+	<span>Number of surveys read: ${surveyCount}</span>
 	<br>
 </g:if>
 <g:else>

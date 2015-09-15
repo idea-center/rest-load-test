@@ -89,7 +89,7 @@ class PostSurveysController
 	def loadTestExistingSurveys()
 	{
 		println params
-		def url = getBaseUrl(params.host, params.port) + '/v1/surveys'
+		def url = getBaseUrl(params.host, params.port) + '/v1/surveys?max=50'
 		println url
 		
 		def start = System.currentTimeMillis()
@@ -119,13 +119,14 @@ class PostSurveysController
 		}
 		
 		def json = response.json
-		def surveyCount = json.total_results
+		def totalSurveys = json.total_results
+		def surveyCount = json.data.size()
 		def duration = end - start
 		def rate = surveyCount*1000L*3600L/duration
 		
-		//println json
+		println surveyCount
 		
-		render template: 'postSurveys', model: [status: status, surveyCount: surveyCount, duration: duration, rate: (int)rate, test: 'surveys']
+		render template: 'postSurveys', model: [status: status, surveyCount: surveyCount, totalSurveys: totalSurveys, duration: duration, rate: (int)rate, test: 'surveys']
 	}
 	
 	def getBaseUrl(host, port)

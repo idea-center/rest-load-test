@@ -24,7 +24,7 @@ class SurveyGeneratorService
 	public static final int CHAIR_RATER_FORM_ID = 14
 
 	private static final int MAX_ASKED = 50
-	private static final int MAX_ID = 9999
+	private static final int MAX_ID = 9999999
 
 	/**
 	 * Build a sample RESTSurvey that has the given information form ID and rater form ID.
@@ -54,7 +54,7 @@ class SurveyGeneratorService
 		def raterForm = buildRESTForm(raterFormID, false, extraQuestionGroups, isStudentRatings)
 
 		RESTSurvey restSurvey = new RESTSurvey(
-						/*id: id, groupId: groupId,*/ srcId: srcId, srcGroupId: srcGroupId,
+						srcId: srcId, srcGroupId: srcGroupId,
 						year: year, term: term,
 						includesGapAnalysis: includesGapAnalysis,
 						startDate: startDate, endDate: endDate, creationDate: creationDate,

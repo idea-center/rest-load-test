@@ -34,3 +34,8 @@ input.btn:hover
 {
 	text-shadow: 1px 1px 4px tomato;
 }
+
+div.form-inline input
+{
+	margin-bottom: 5px;
+}

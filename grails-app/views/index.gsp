@@ -9,19 +9,29 @@
 			<div class="header well"><h4>IDEA REST SERVER Load Test Application</h4></div>
 			
 			<div class="row">
-				<g:form class="form">
-					<div class="form-inline form-group">
-						<label for="hostName">Host:</label>
-						<input type="text" id="hostName" name="host" class="form-control" placeholder="default: localhost">
-						<label for="portNumber">Port:</label>
-						<input type="text" id="portNumber" name="port" class="form-control" placeholder="default: 8091">
-						<label for="appName">App name:</label>
-						<input type="text" id="appName" name="appName" class="form-control" placeholder="enter app name">
-						<label for="appKey">App key:</label>
-						<input type="text" id="appKey" name="appKey" class="form-control" placeholder="enter app key">
+				<g:form class="form form-horizontal">
+					<div class="row" style="margin-top: 0;">
+						<div class="col-md-3">
+							<label for="hostName" class="control-label">Host:</label>
+							<input type="text" id="hostName" name="host" class="form-control" placeholder="default: localhost">
+						</div>
+						<div class="col-md-2">
+							<label for="portNumber" class="control-label">Port:</label>
+							<input type="text" id="portNumber" name="port" class="form-control" placeholder="default: 8091">
+						</div>
+						<div class="col-md-2">
+							<label for="appName" class="control-label">App name:</label>
+							<input type="text" id="appName" name="appName" class="form-control" placeholder="enter app name">
+						</div>
+						<div class="col-md-5">
+							<label for="appKey" class="control-label">App key:</label>
+							<input type="text" id="appKey" name="appKey" class="form-control" placeholder="enter app key">
+						</div>
 					</div>
 					
 					<div class="col-lg-6" id="reportsTesting">
+						<div class="alert alert-success"><b>TEST Reports</b> (GET report metadata, report models)</div>
+						
 						<div class="row form-group ">
 							<div class="form-inline">
 								<label for="reportThreads" class="col-md-6">Report model threads:</label>
@@ -59,6 +69,8 @@
 					</div>
 					
 					<div class="col-lg-6" id="surveysTesting">
+						<div class="alert alert-warning"><b>TEST Surveys</b> (GET surveys, POST surveys)</div>
+						
 						<div class="row form-group form-inline">
 							<label for="surveyThreads" class="col-md-6">Survey threads:</label>
 							<input type="number" min="1" max="20" value="1" id="surveyThreads" name="surveyThreads" class="form-control col-md-2">
@@ -67,14 +79,14 @@
 							<input type="number" min="1" max="5000" value="100" id="surveyCount" name="surveyCount" class="form-control col-md-2">
 						</div>
 						<div class="row form-group">
-							<g:submitToRemote class="btn btn-primary submit" value="Test GET Surveys" id="test-get-report-models" url="[controller: 'postSurveys', action: 'loadTestExistingSurveys']" method="GET" 
+							<g:submitToRemote class="btn btn-primary submit" value="Test GET Surveys" id="test-get-surveys" url="[controller: 'postSurveys', action: 'loadTestExistingSurveys']" method="GET" 
 									update="get-surveys-results" />
 						</div>
 						<div class="row results" id="get-surveys-results"></div>
 						<div class="hide" id="get-surveys-spinner" style="margin-top: -20px;"><asset:image src="spinner.gif"></asset:image></div>
 						
 						<div class="row form-group">
-							<g:submitToRemote class="btn btn-primary submit" value="Test POST Surveys" id="test-get-report-models" url="[controller: 'postSurveys', action: 'loadTestPostSurveys']" method="POST" 
+							<g:submitToRemote class="btn btn-primary submit" value="Test POST Surveys" id="test-post-surveys" url="[controller: 'postSurveys', action: 'loadTestPostSurveys']" method="POST" 
 									update="post-surveys-results" />
 						</div>
 						<div class="row results" id="post-surveys-results"></div>

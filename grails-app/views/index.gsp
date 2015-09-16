@@ -20,11 +20,11 @@
 							<input type="text" id="portNumber" name="port" class="form-control" placeholder="default: 8091">
 						</div>
 						<div class="col-md-2">
-							<label for="appName" class="control-label">App name:</label>
+							<label for="appName" class="control-label">App name <small>(required)</small>:</label>
 							<input type="text" id="appName" name="appName" class="form-control" placeholder="enter app name">
 						</div>
 						<div class="col-md-5">
-							<label for="appKey" class="control-label">App key:</label>
+							<label for="appKey" class="control-label">App key <small>(required)</small>:</label>
 							<input type="text" id="appKey" name="appKey" class="form-control" placeholder="enter app key">
 						</div>
 					</div>

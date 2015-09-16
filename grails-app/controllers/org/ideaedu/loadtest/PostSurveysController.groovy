@@ -7,8 +7,8 @@ import groovyx.gpars.GParsPool
 class PostSurveysController
 {
 	def restBuilder = new RestBuilder()
-	def app = 'IOL3'
-	def appKey = '872ttyu8d47a07c6330430lkq39500c5072bp822'
+	def app
+	def appKey
 	def jsonContent = 'application/json;charset=utf-8'
 	
 	def surveyGeneratorService
@@ -22,6 +22,9 @@ class PostSurveysController
 		println params
 		def url = getBaseUrl(params.host, params.port) + '/v1/services/survey'
 		println url
+		
+		app = params.appName
+		appKey = params.appKey
 		
 		def surveyCount = params.surveyCount ?: SURVEY_COUNT
 		surveyCount = surveyCount as int
@@ -93,6 +96,9 @@ class PostSurveysController
 		println params
 		def url = getBaseUrl(params.host, params.port) + '/v1/surveys?max=50'
 		println url
+		
+		app = params.appName
+		appKey = params.appKey
 		
 		def start = System.currentTimeMillis()
 		

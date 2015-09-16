@@ -12,8 +12,8 @@ import java.util.concurrent.ConcurrentHashMap
 class GetReportsController
 {
 	def restBuilder = new RestBuilder()
-	def app = 'IOL3'
-	def appKey = '872ttyu8d47a07c6330430lkq39500c5072bp822'
+	def app
+	def appKey
 	def jsonContent = 'application/json;charset=utf-8'
 	
 	def static SURVEY_REPORTS_THREADS = 1
@@ -40,6 +40,9 @@ class GetReportsController
 	{
 		println params
 		def url = getBaseUrl(params.host, params.port) + '/v1/reports'
+		
+		app = params.appName
+		appKey = params.appKey
 		
 		def start = System.currentTimeMillis()
 		
@@ -75,7 +78,7 @@ class GetReportsController
 		render template: 'loadTestExistingReports', model: [status: status, reportCount: reportCount, duration: duration, rate: (int)rate, test: 'reports']
 	}
 	
-	def getSurveyIds(test)
+	def getSurveyIds(test, app, appKey)
 	{
 		println 'Looking for survey IDs...'
 		
@@ -131,7 +134,10 @@ class GetReportsController
 		println params
 		def url = getBaseUrl(params.host, params.port) + '/v1/reports'
 		
-		def surveyIds = getSurveyIds('reportModels')
+		app = params.appName
+		appKey = params.appKey
+		
+		def surveyIds = getSurveyIds('reportModels', app, appKey)
 		
 		if (!surveyIds)
 		{
@@ -220,7 +226,10 @@ class GetReportsController
 		println params
 		def url = getBaseUrl(params.host, params.port) + '/v1/reports'
 		
-		def surveyIds = getSurveyIds('reportModelQuestions')
+		app = params.appName
+		appKey = params.appKey
+		
+		def surveyIds = getSurveyIds('reportModelQuestions', app, appKey)
 		
 		if (!surveyIds)
 		{

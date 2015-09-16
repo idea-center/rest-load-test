@@ -52,16 +52,6 @@ $(document).ready(function()
 		$('#portQuestions').val($(this).val());
 	});
 	
-	$('#reportThreads').change(function(){
-		$('#reportThreads1').val($(this).val());
-		$('#reportThreads2').val($(this).val());
-	});
-	
-	$('#questionThreads').change(function(){
-		$('#questionThreads1').val($(this).val());
-		$('#questionThreads2').val($(this).val());
-	});
-	
 	$('#reportCount').change(function(){
 		$('#reportCount1').val($(this).val());
 		$('#reportCount2').val($(this).val());
@@ -79,21 +69,5 @@ $(document).ready(function()
 		$('#post-surveys-results').html('');
 		$('#postSurveysForm').submit();
 		$('#post-surveys-spinner').removeClass('hide');
-	});
-	
-	$('#hostName1').change(function(){
-		$('#hostName2').val($(this).val());
-	});
-	
-	$('#portNumber1').change(function(){
-		$('#portNumber2').val($(this).val());
-	});
-	
-	$('#surveyThreads').change(function(){
-		$('#surveyThreads1').val($(this).val());
-	});
-	
-	$('#surveyCount').change(function(){
-		$('#surveyCount1').val($(this).val());
 	});
 });

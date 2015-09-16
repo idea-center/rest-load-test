@@ -40,8 +40,6 @@ class SurveyGeneratorService
 	{
 		def random = new Random()
 
-		//def id = random.nextInt(MAX_ID) + 1
-		//def groupId = random.nextInt(MAX_ID) + 1
 		def srcId = (random.nextInt(MAX_ID) + 1).toString()
 		def srcGroupId = (random.nextInt(MAX_ID) + 1).toString()
 		def year = 2015
@@ -125,75 +123,6 @@ class SurveyGeneratorService
 
 		return restForm
 	}
-
-	/**
-	 * Return a list of RESTQuestionGroup of the given type.
-	 *
-	 * @param type                question group type. Expected values = 'open' or 'scaled'
-	 * @param responseOptionCount number of response options to include in each question group
-	 * @param groupCount          number of groups to include in the returned list
-	 * @param questionsInGroup    number of questions to include in each group
-	 * @return List of RESTQuestionGroup
-	 */
-	/*def buildCustomQuestionGroups(final String type, final int responseOptionCount, final int groupCount, final int questionsInGroup)
-	{
-		List<RESTQuestionGroup> groups = []
-
-		if(groupCount > 0)
-		{
-			//First extra question group number should be greater than last standard question group number.
-			for( i in 100..(groupCount+100) )
-			{
-				RESTQuestionGroup group = new RESTQuestionGroup()
-				group.type = type
-				group.number = i
-				group.title = "Question Group Title $i"
-				group.message = "Question group message $i"
-
-				if(responseOptionCount > 0)
-				{
-					group.responseOptions = buildRESTResponseOptions(responseOptionCount)
-				}
-
-				if(questionsInGroup > 0)
-				{
-					group.questions = []
-					for(y in 1..questionsInGroup)
-					{
-						RESTQuestion q = new RESTQuestion()
-						q.type = type
-						q.number = y
-						q.text = "Am I question $y?"
-						//TODO: Do we need an option to set question ID?
-						//TODO: Do we need an option to set question response options?
-						group.questions.add(q)
-					}
-				}
-
-				groups.add(group)
-
-			}
-		}
-
-		return groups
-
-	}
-
-	def buildRESTResponseOptions(final int responseOptionCount)
-	{
-		List<RESTResponseOption> responseOptions = []
-		for(r in 1..responseOptionCount)
-		{
-			RESTResponseOption ro = new RESTResponseOption()
-			ro.value = r
-			ro.description = "Response option description $r"
-			ro.abbreviation = "RO$r"
-			//TODO: Do we need an option to set isExcluded?
-			responseOptions.add(ro)
-		}
-
-		return responseOptions
-	}*/
 
 	/**
 	 * Build the Set of RESTRespondents to use; this will create the number of respondents given (count)
@@ -291,62 +220,8 @@ class SurveyGeneratorService
 	static getQuestions(formID)
 	{
 		def questions = FORM_QUESTIONS[formID]
-
-		//def surveyDataStore = DataStoreHelper.instance.getSurveyDataStore()
-		//def questionGroups = surveyDataStore?.getQuestionGroupsByFormTypeID(formID)
-		/*if(questionGroups)
-		{
-			// Looks like we have access to a real data store so we can use those questions instead of the hard-coded ones.
-			questions = [:]
-			questionGroups.each { questionGroup ->
-				questionGroup?.questions?.each { question ->
-					if(question)
-					{
-						def questionID = question.getId()
-						def type = getType(question)
-						def responseOptions = getResponseOptions(question)
-
-						questions[questionID] = [ type: type, responseOptions: responseOptions]
-					}
-				}
-			}
-		}*/
-
 		return questions
 	}
-
-	/**
-	 * Get the question type.
-	 */
-	/*static getType(question) {
-		def type = "open"
-
-		if(question instanceof IScaledQuestion)
-		{
-			type = "scaled"
-		}
-
-		return type
-	}*/
-
-	/**
-	 * Get the response options (as a list of values) for the given question.
-	 */
-	/*static getResponseOptions(question) {
-		def responseOptions
-
-		if(question && question instanceof IScaledQuestion)
-		{
-			responseOptions = []
-			question.getResponseOptionsFromQuestionOrGroup()?.each { responseOption ->
-				responseOptions << responseOption.value
-			}
-
-			responseOptions = responseOptions.sort()
-		}
-
-		return responseOptions
-	}*/
 	
 	private static final FORM_QUESTIONS = [
 		(TE_RATER_FORM_ID): [

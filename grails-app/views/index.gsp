@@ -38,20 +38,20 @@
 						</div>
 						
 						<div class="row form-group">
-							<g:submitToRemote class="btn btn-primary" value="Test GET Reports" id="test-get-reports" url="[controller: 'getReports', action: 'loadTestExistingReports']" method="GET" update="get-reports-results" />
+							<g:submitToRemote class="btn btn-primary submit" value="Test GET Reports" id="test-get-reports" url="[controller: 'getReports', action: 'loadTestExistingReports']" method="GET" update="get-reports-results" />
 						</div>
 						<div class="row hide" id="get-reports-spinner" style="margin-top: -20px;"><asset:image src="spinner.gif"></asset:image></div>
 						<div class="row results" id="get-reports-results"></div>
 						
 						<div class="row form-group">
-							<g:submitToRemote class="btn btn-primary" value="Test GET Report Models" id="test-get-report-models" url="[controller: 'getReports', action: 'loadTestExistingReportModels']" method="GET" 
+							<g:submitToRemote class="btn btn-primary submit" value="Test GET Report Models" id="test-get-report-models" url="[controller: 'getReports', action: 'loadTestExistingReportModels']" method="GET" 
 											update="get-report-models-results" />
 						</div>
 						<div class="row hide" id="get-report-models-spinner" style="margin-top: -20px;"><asset:image src="spinner.gif"></asset:image></div>
 						<div class="row results" id="get-report-models-results"></div>
 						
 						<div class="row form-group">
-							<g:submitToRemote class="btn btn-primary" value="Test GET Report Models with Questions" id="test-get-report-models-questions" url="[controller: 'getReports', action: 'loadTestExistingReportModelsAndQuestions']" 
+							<g:submitToRemote class="btn btn-primary submit" value="Test GET Report Models with Questions" id="test-get-report-models-questions" url="[controller: 'getReports', action: 'loadTestExistingReportModelsAndQuestions']" 
 											method="GET" update="get-report-models-questions-results" />
 						</div>
 						<div class="row hide" id="get-report-models-questions-spinner" style="margin-top: -20px;"><asset:image src="spinner.gif"></asset:image></div>
@@ -67,14 +67,14 @@
 							<input type="number" min="1" max="5000" value="100" id="surveyCount" name="surveyCount" class="form-control col-md-2">
 						</div>
 						<div class="row form-group">
-							<g:submitToRemote class="btn btn-primary" value="Test GET Surveys" id="test-get-report-models" url="[controller: 'postSurveys', action: 'loadTestExistingSurveys']" method="GET" 
+							<g:submitToRemote class="btn btn-primary submit" value="Test GET Surveys" id="test-get-report-models" url="[controller: 'postSurveys', action: 'loadTestExistingSurveys']" method="GET" 
 									update="get-surveys-results" />
 						</div>
 						<div class="row results" id="get-surveys-results"></div>
 						<div class="hide" id="get-surveys-spinner" style="margin-top: -20px;"><asset:image src="spinner.gif"></asset:image></div>
 						
 						<div class="row form-group">
-							<g:submitToRemote class="btn btn-primary" value="Test POST Surveys" id="test-get-report-models" url="[controller: 'postSurveys', action: 'loadTestPostSurveys']" method="POST" 
+							<g:submitToRemote class="btn btn-primary submit" value="Test POST Surveys" id="test-get-report-models" url="[controller: 'postSurveys', action: 'loadTestPostSurveys']" method="POST" 
 									update="post-surveys-results" />
 						</div>
 						<div class="row results" id="post-surveys-results"></div>

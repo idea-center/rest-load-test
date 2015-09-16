@@ -21,6 +21,23 @@ if (typeof jQuery !== 'undefined') {
 
 $(document).ready(function()
 {
+	disableButtons();
+	
+	/*$('#appKey').change(function(){
+		if ($(this).val() && $('#appName').val()) enableButtons();
+		else disableButtons();
+	});*/
+	
+	$('#appName').bind("change paste keyup", function() {
+		if ($(this).val() && $('#appKey').val()) enableButtons();
+		else disableButtons();
+	});
+	
+	$('#appKey').bind("change paste keyup", function() {
+		if ($(this).val() && $('#appName').val()) enableButtons();
+		else disableButtons();
+	});
+	
 	$('#test-get-reports').click(function(){
 		$(this).attr('disabled', 'disabled');
 		$('#get-reports-results').html('');
@@ -42,16 +59,6 @@ $(document).ready(function()
 		$('#get-report-models-questions-spinner').removeClass('hide');
 	});
 	
-	$('#hostName').change(function(){
-		$('#hostModels').val($(this).val());
-		$('#hostQuestions').val($(this).val());
-	});
-	
-	$('#portNumber').change(function(){
-		$('#portModels').val($(this).val());
-		$('#portQuestions').val($(this).val());
-	});
-	
 	$('#reportCount').change(function(){
 		$('#reportCount1').val($(this).val());
 		$('#reportCount2').val($(this).val());
@@ -71,3 +78,13 @@ $(document).ready(function()
 		$('#post-surveys-spinner').removeClass('hide');
 	});
 });
+
+function enableButtons()
+{
+	$('.submit').removeAttr('disabled');
+}
+
+function disableButtons()
+{
+	$('.submit').attr('disabled', true);
+}

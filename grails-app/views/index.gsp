@@ -43,7 +43,7 @@
 							</div>
 							<div class="form-inline">
 								<label for="reportCount" class="col-md-6">Max survey id's to use:</label>
-								<input type="number" min="1" max="500" value="50" id="reportCount" name="reportCount" class="form-control col-md-2">
+								<input type="number" min="1" max="500" value="50" step="10" id="reportCount" name="reportCount" class="form-control col-md-2">
 							</div>
 						</div>
 						
@@ -76,7 +76,7 @@
 							<input type="number" min="1" max="20" value="1" id="surveyThreads" name="surveyThreads" class="form-control col-md-2">
 
 							<label for="surveyCount" class="col-md-6">Number of surveys to POST:</label>
-							<input type="number" min="1" max="5000" value="100" id="surveyCount" name="surveyCount" class="form-control col-md-2">
+							<input type="number" min="1" max="5000" value="100" step="50" id="surveyCount" name="surveyCount" class="form-control col-md-2">
 						</div>
 						<div class="row form-group">
 							<g:submitToRemote class="btn btn-primary submit" value="Test GET Surveys" id="test-get-surveys" url="[controller: 'postSurveys', action: 'loadTestExistingSurveys']" method="GET" 

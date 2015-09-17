@@ -4,19 +4,11 @@
 *
 * Any CSS file within this directory can be referenced here using a relative path.
 *
-* You're free to add application-wide styles to this file and they'll appear at the top of the
-* compiled file, but it's generally better to create a new file per style scope.
-*
 *= require bootstrap
 *= require_self
 */
 
 div.row {margin: 20px 0;}
-
-div.results
-{
-	transition: all 1s;
-}
 
 .header.well 
 {

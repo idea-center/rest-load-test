@@ -6,16 +6,6 @@
 //= require_tree .
 //= require_self
 
-if (typeof jQuery !== 'undefined') {
-	(function($) {
-		$('#spinner').ajaxStart(function() {
-			$(this).fadeIn();
-		}).ajaxStop(function() {
-			$(this).fadeOut();
-		});
-	})(jQuery);
-}
-
 $(document).ready(function()
 {
 	disableButtons();
@@ -49,11 +39,6 @@ $(document).ready(function()
 		$('#get-report-models-questions-results').html('');
 		$('#getReportModelsQuestionsForm').submit();
 		$('#get-report-models-questions-spinner').removeClass('hide');
-	});
-	
-	$('#reportCount').change(function(){
-		$('#reportCount1').val($(this).val());
-		$('#reportCount2').val($(this).val());
 	});
 	
 	$('#test-get-surveys').click(function(){

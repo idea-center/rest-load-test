@@ -12,15 +12,31 @@ import java.util.concurrent.ConcurrentHashMap
 class GetReportsController
 {
 	def restBuilder = new RestBuilder()
-	def app
-	def appKey
 	def jsonContent = 'application/json;charset=utf-8'
 	
-	def static SURVEY_REPORTS_THREADS = 1
-	def static REPORT_MODEL_THREADS = 1
-	def static QUESTIONS_MODEL_THREADS = 1
-	def static MAX_REPORTS_TO_GET = 100
+	// sent via params
+	def app
+	def appKey
 	
+	// number of threads to use when reading survey ids in order to get reports; keep at 1 for best results
+	// the corrsponding call is not included in rate measurements
+	def static SURVEY_REPORTS_THREADS = 1
+	
+	// number of threads to use when calling the GET ../report/:id/model endpoint in parallel
+	def static REPORT_MODEL_THREADS = 1
+	
+	// number of threads to use when calling the GET ../report/:id/model/:questionid endpoint in parallel
+	def static QUESTIONS_MODEL_THREADS = 1
+	
+	// how many survey ids to read when testing GET report data (generally there are 2 reports per survey id)
+	def static MAX_SURVEY_IDS_TO_GET = 100
+	
+	/**
+	 * Builds the correct url to call
+	 * @param host
+	 * @param port
+	 * @return
+	 */
 	def getBaseUrl(host, port)
 	{
 		if (!host) host = 'localhost'
@@ -29,6 +45,12 @@ class GetReportsController
 		return "http://${host}:${port}/IDEA-REST-SERVER"
 	}
 	
+	/**
+	 * Adds page parameter to http call
+	 * @param url
+	 * @param page
+	 * @return
+	 */
 	def getUrlForPage(url, page)
 	{
 		if (!page) page=0
@@ -36,6 +58,10 @@ class GetReportsController
 		return "${url}${suffix}"
 	}
 	
+	/**
+	 * Test the GET /reports endpoint
+	 * @return
+	 */
 	def loadTestExistingReports()
 	{
 		println params
@@ -78,6 +104,13 @@ class GetReportsController
 		render template: 'loadTestExistingReports', model: [status: status, reportCount: reportCount, duration: duration, rate: (int)rate, test: 'reports']
 	}
 	
+	/**
+	 * Reads the survey ids available on the server. This is a helper method and it is NOT taken into account for rate measurements.
+	 * @param test
+	 * @param app
+	 * @param appKey
+	 * @return
+	 */
 	def getSurveyIds(test, app, appKey)
 	{
 		println 'Looking for survey IDs...'
@@ -89,11 +122,12 @@ class GetReportsController
 		def status
 		def json
 		
-		def maxReports = params.reportCount ?: MAX_REPORTS_TO_GET
-		maxReports = maxReports as int
-		if (maxReports < 1) maxReports = MAX_REPORTS_TO_GET
+		def maxSurveyIds = params.reportCount ?: MAX_SURVEY_IDS_TO_GET
+		maxSurveyIds = maxSurveyIds as int
+		if (maxSurveyIds < 1) maxSurveyIds = MAX_SURVEY_IDS_TO_GET
 		
-		while (surveyIds.size() < maxReports && pageResults != [])
+		// read survey ids from the server until the maximum number is reached, or until there are no more surveys available (passes increasing values for the page param)
+		while (surveyIds.size() < maxSurveyIds && pageResults != [])
 		{
 			def url = getUrlForPage(getBaseUrl(params.host, params.port) + "/v1/reports", page)
 			
@@ -129,6 +163,10 @@ class GetReportsController
 		return surveyIds
 	}
 	
+	/**
+	 * Test the GET /report/:id/model endpoint. This test is mainly to ensure that reports are available. Only report metadata is returned.
+	 * @return
+	 */
 	def loadTestExistingReportModels()
 	{
 		println params
@@ -137,6 +175,7 @@ class GetReportsController
 		app = params.appName
 		appKey = params.appKey
 		
+		// get the collection of survey ids to use in getting reports
 		def surveyIds = getSurveyIds('reportModels', app, appKey)
 		
 		if (!surveyIds)
@@ -162,10 +201,12 @@ class GetReportsController
 		def json
 		def reportIds = [] as Set
 		
-		// this should be done with 1 thread only, it is fast enough
+		// this should be done with 1 thread only
 		GParsPool.withPool SURVEY_REPORTS_THREADS, {
 			surveyIds.eachParallel
 			{
+				// this block is synchronized so that the collection of report ids is not updated updated concurrently
+				// data loss can occur if this block is not synchronized
 				synchronized(reportIds)
 				{
 					response = restBuilder.get(url + '?survey_id=' + it + '&type=ALL') {
@@ -190,6 +231,8 @@ class GetReportsController
 		
 		println "Found ${reportIds.size()} unique report IDs"
 		
+		// call the GET /report/:id/model endpoint in parallel
+		// an alternative to GParsPool.withPool is GParsPool.withExecutorPool; former is more efficient, latter might be safer - to investigate
 		GParsPool.withPool rthreads, {
 			reportIds.eachParallel
 			{
@@ -221,6 +264,10 @@ class GetReportsController
 		render template: 'loadTestExistingReports', model: [status: status, reportCount: reportCount, duration: duration, rate: (int)rate, test: 'reportModels']
 	}
 	
+	/**
+	 * Test the GET /report/:id/model/:questionid endpoint
+	 * @return
+	 */
 	def loadTestExistingReportModelsAndQuestions()
 	{
 		println params
@@ -229,6 +276,7 @@ class GetReportsController
 		app = params.appName
 		appKey = params.appKey
 		
+		// get the collection of survey ids to use in getting reports
 		def surveyIds = getSurveyIds('reportModelQuestions', app, appKey)
 		
 		if (!surveyIds)
@@ -259,9 +307,12 @@ class GetReportsController
 		def reportIds = [] as Set
 		
 		// this should stay at 1 so synchronization should not be necessary
-		GParsPool.withPool SURVEY_REPORTS_THREADS, {
+		// represents the 1st query in the sequence used by CL
+		GParsPool.withPool SURVEY_REPORTS_THREADS, 
+		{
 			surveyIds.eachParallel
 			{
+				// this block is synchronized so that collection of report ids is not updated updated concurrently
 				synchronized(reportIds)
 				{
 					response = restBuilder.get(url + '?survey_id=' + it + '&type=ALL') {
@@ -288,9 +339,13 @@ class GetReportsController
 		
 		def reportModelsAndQuestions = [:]
 		
-		GParsPool.withPool rthreads, {
+		// call the GET /report/:id/model endpoint in parallel
+		// represents the 2nd query in the sequence used by CL
+		GParsPool.withPool rthreads, 
+		{
 			reportIds.eachParallel
 			{
+				// this block is synchronized so that the map of [report_id : aggregate_data] is not updated updated concurrently
 				synchronized(reportModelsAndQuestions)
 				{
 					response = restBuilder.get(url[0..-2] + '/' + it + '/model') {
@@ -314,7 +369,10 @@ class GetReportsController
 		
 		def reportsWithNoData = 0
 		
-		GParsPool.withPool rthreads, {
+		// call the GET /report/:id/model/:questionid endpoint in parallel
+		// represents the 2nd query in the sequence used by CL
+		GParsPool.withPool rthreads, 
+		{
 			reportModelsAndQuestions.eachParallel
 			{
 				keyValuePair ->
@@ -323,6 +381,7 @@ class GetReportsController
 				if (!aggData) reportsWithNoData++
 				else
 				{
+					// a synchronized list seemed to work well here
 					def dataPoints = Collections.synchronizedList(aggData.response_data_points)
 					
 					GParsPool.withPool qthreads, {

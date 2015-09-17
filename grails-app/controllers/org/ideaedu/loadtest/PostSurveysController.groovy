@@ -4,19 +4,36 @@ import grails.converters.JSON
 import grails.plugins.rest.client.RestBuilder
 import groovyx.gpars.GParsPool
 
+/**
+ * This controller will perform load tests on the IDEA-REST-SERVER POST ../services/survey end-point, as well as GET surveys
+ * @author daniel
+ *
+ */
 class PostSurveysController
 {
 	def restBuilder = new RestBuilder()
-	def app
-	def appKey
 	def jsonContent = 'application/json;charset=utf-8'
 	
+	// sent via params
+	def app
+	def appKey
+	
+	// generates survey data with random responses
 	def surveyGeneratorService
 	
+	// number of threads to use when posting survey data
 	def static SURVEY_REPORTS_THREADS = 1
+	
+	// default number of surveys to POST if not given via params
 	def static SURVEY_COUNT = 1
+	
+	// using more than 500 generated surveys is likely to cause out of memory errors
 	def static MAX_SURVEYS_TO_POST = 5000
 
+	/**
+	 * Tests the POST surveys endpoint by sending generated json
+	 * @return
+	 */
 	def loadTestPostSurveys()
 	{
 		println params
@@ -43,7 +60,11 @@ class PostSurveysController
 		
 		def response
 		def status
+		
+		// counts surveys successfully saved
 		def savedSurveys = 0
+		
+		// counts surveys that could not be saved on the REST server
 		def errorSurveys = 0
 		
 		println "Using $sthreads thread(s) to post ${surveyCount} surveys"
@@ -51,6 +72,8 @@ class PostSurveysController
 		println "Starting timer..."
 		def start = System.currentTimeMillis()
 		
+		// POST survey data in parallel by calling the endpoint via a thread pool
+		// TODO: determine if synchronization is necessary here
 		GParsPool.withPool sthreads,
 		{
 			sampleSurveys.eachParallel
@@ -91,6 +114,10 @@ class PostSurveysController
 		render template: 'postSurveys', model: [status: status, surveyCount: savedSurveys, errorSurveys: errorSurveys, duration: duration, rate: (int)rate, test: 'postSurveys']
 	}
 	
+	/**
+	 * Test the GET surveys endpoint by reading existing survey data (only 1 call is made)
+	 * @return
+	 */
 	def loadTestExistingSurveys()
 	{
 		println params
@@ -135,6 +162,12 @@ class PostSurveysController
 		render template: 'postSurveys', model: [status: status, surveyCount: surveyCount, totalSurveys: totalSurveys, duration: duration, rate: (int)rate, test: 'surveys']
 	}
 	
+	/**
+	 * Builds the correct url to call
+	 * @param host
+	 * @param port
+	 * @return
+	 */
 	def getBaseUrl(host, port)
 	{
 		if (!host) host = 'localhost'
@@ -143,6 +176,12 @@ class PostSurveysController
 		return "http://${host}:${port}/IDEA-REST-SERVER"
 	}
 	
+	/**
+	 * Adds page parameter to http call
+	 * @param url
+	 * @param page
+	 * @return
+	 */
 	def getUrlForPage(url, page)
 	{
 		if (!page) page=0

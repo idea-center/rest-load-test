@@ -1,9 +1,6 @@
-// This is a manifest file that'll be compiled into application.js.
+// This is a manifest file that will be compiled into application.js.
 //
 // Any JavaScript file within this directory can be referenced here using a relative path.
-//
-// You're free to add application-wide JavaScript to this file, but it's generally better 
-// to create separate JavaScript files as needed.
 //
 //= require jquery
 //= require_tree .
@@ -22,11 +19,6 @@ if (typeof jQuery !== 'undefined') {
 $(document).ready(function()
 {
 	disableButtons();
-	
-	/*$('#appKey').change(function(){
-		if ($(this).val() && $('#appName').val()) enableButtons();
-		else disableButtons();
-	});*/
 	
 	$('#appName').bind("change paste keyup", function() {
 		if ($(this).val() && $('#appKey').val()) enableButtons();

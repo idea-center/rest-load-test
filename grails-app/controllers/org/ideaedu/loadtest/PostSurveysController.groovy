@@ -53,8 +53,10 @@ class PostSurveysController
 		if (sthreads < 1) sthreads = SURVEY_REPORTS_THREADS
 		
 		def sampleSurveys = []
+		
 		for (i in 1..surveyCount)
 		{
+			// use faculty info form, diagnostic rater form, no extra questions
 			sampleSurveys << surveyGeneratorService.buildRESTSurvey(1, 9, null, true)
 		}
 		
@@ -76,24 +78,26 @@ class PostSurveysController
 			sampleSurveys.eachParallel
 			{ 
 				surveyData ->
-
-				try
+				synchronized(sampleSurveys)
 				{
-					response = restBuilder.post(url)
+					try
 					{
-						header 'X-IDEA-APPNAME', app
-						header 'X-IDEA-KEY', appKey
-						header 'Content-Type', jsonContent
-						json 	surveyData.toJSON()
+						response = restBuilder.post(url)
+						{
+							header 'X-IDEA-APPNAME', app
+							header 'X-IDEA-KEY', appKey
+							header 'Content-Type', jsonContent
+							json 	surveyData.toJSON()
+						}
+	
+						status = response.status
+	
+						if (status == 200) savedSurveys++
 					}
-
-					status = response.status
-
-					if (status == 200) savedSurveys++
-				}
-				catch(e)
-				{
-					status = 'Connection timed out'
+					catch(e)
+					{
+						status = 'Connection timed out'
+					}
 				}
 			}
 		}

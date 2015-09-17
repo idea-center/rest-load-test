@@ -72,12 +72,12 @@ class PostSurveysController
 		def start = System.currentTimeMillis()
 		
 		// POST survey data in parallel by calling the endpoint via a thread pool
-		// TODO: determine if synchronization is necessary here
 		GParsPool.withPool sthreads,
 		{
 			sampleSurveys.eachParallel
 			{ 
 				surveyData ->
+				// synchronization is necessary, in its absence I was getting 2 to 4% errors in saving survey data (100 surveys, 10 threads)
 				synchronized(sampleSurveys)
 				{
 					try

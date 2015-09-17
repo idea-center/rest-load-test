@@ -78,6 +78,7 @@ class PostSurveysController
 			{ 
 				surveyData ->
 				// synchronization is necessary, in its absence I was getting 2 to 4% errors in saving survey data (100 surveys, 10 threads)
+				// I did not get errors with 5 threads or less. Also, performance was higher with 5 threads vs 10.
 				synchronized(sampleSurveys)
 				{
 					try

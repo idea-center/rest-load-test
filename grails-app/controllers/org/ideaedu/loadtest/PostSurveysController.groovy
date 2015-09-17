@@ -64,9 +64,6 @@ class PostSurveysController
 		// counts surveys successfully saved
 		def savedSurveys = 0
 		
-		// counts surveys that could not be saved on the REST server
-		def errorSurveys = 0
-		
 		println "Using $sthreads thread(s) to post ${surveyCount} surveys"
 		
 		println "Starting timer..."
@@ -93,7 +90,6 @@ class PostSurveysController
 					status = response.status
 
 					if (status == 200) savedSurveys++
-					else errorSurveys++
 				}
 				catch(e)
 				{
@@ -107,6 +103,7 @@ class PostSurveysController
 		
 		def duration = end - start
 		def rate = savedSurveys*1000L*3600L/duration
+		def errorSurveys = surveyCount - savedSurveys
 		
 		sampleSurveys.clear()
 		System.gc()

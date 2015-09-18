@@ -27,7 +27,7 @@ class PostSurveysController
 	// default number of surveys to POST if not given via params
 	def static SURVEY_COUNT = 1
 	
-	// using more than 500 generated surveys is likely to cause out of memory errors
+	// using more than 5000 generated surveys is likely to cause out of memory errors
 	def static MAX_SURVEYS_TO_POST = 5000
 
 	/**

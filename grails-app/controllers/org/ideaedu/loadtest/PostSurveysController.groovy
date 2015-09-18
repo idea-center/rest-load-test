@@ -34,6 +34,7 @@ class PostSurveysController
 	 * Tests the POST surveys endpoint by sending generated json
 	 * @return
 	 */
+	// TODO: allow posting more than 5000 surveys by using a for loop, generating 5000 survey objects in memory at a time, then clearing the collection before the next batch, etc.
 	def loadTestPostSurveys()
 	{
 		println params

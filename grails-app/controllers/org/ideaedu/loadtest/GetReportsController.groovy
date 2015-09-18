@@ -19,7 +19,7 @@ class GetReportsController
 	def appKey
 	
 	// number of threads to use when reading survey ids in order to get reports; keep at 1 for best results
-	// the corrsponding call is not included in rate measurements
+	// the corresponding call is not included in rate measurements
 	def static SURVEY_REPORTS_THREADS = 1
 	
 	// number of threads to use when calling the GET ../report/:id/model endpoint in parallel
@@ -126,7 +126,7 @@ class GetReportsController
 		maxSurveyIds = maxSurveyIds as int
 		if (maxSurveyIds < 1) maxSurveyIds = MAX_SURVEY_IDS_TO_GET
 		
-		// read survey ids from the server until the maximum number is reached, or until there are no more surveys available (passes increasing values for the page param)
+		// read survey ids from the server until the maximum number (from params) is reached, or until there are no more surveys available (the loop passes increasing values for the page param)
 		while (surveyIds.size() < maxSurveyIds && pageResults != [])
 		{
 			def url = getUrlForPage(getBaseUrl(params.host, params.port) + "/v1/reports", page)
@@ -155,7 +155,6 @@ class GetReportsController
 			catch(e)
 			{
 				status = 'Connection timed out'
-				println status
 				break
 			}
 		}
@@ -361,7 +360,7 @@ class GetReportsController
 						return
 					}
 					
-					// key is report id, value is aggregate data
+					// key is report id, value is aggregate data that contains the question model endpoints 
 					reportModelsAndQuestions.putAt(it.toString(), response.json)
 				}
 			}
@@ -370,7 +369,7 @@ class GetReportsController
 		def reportsWithNoData = 0
 		
 		// call the GET /report/:id/model/:questionid endpoint in parallel
-		// represents the 2nd query in the sequence used by CL
+		// represents the 3rd query in the sequence used by CL
 		GParsPool.withPool rthreads, 
 		{
 			reportModelsAndQuestions.eachParallel
@@ -384,6 +383,7 @@ class GetReportsController
 					// a synchronized list seemed to work well here
 					def dataPoints = Collections.synchronizedList(aggData.response_data_points)
 					
+					// nested parallel loop - investigate effects on server!
 					GParsPool.withPool qthreads, {
 						dataPoints.eachParallel
 						{

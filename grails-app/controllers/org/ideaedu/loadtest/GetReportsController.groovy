@@ -101,6 +101,8 @@ class GetReportsController
 		def duration = end - start
 		def rate = reportCount*1000L*3600L/duration
 		
+		println "Finished in ${duration/1000} seconds"
+		
 		render template: 'loadTestExistingReports', model: [status: status, reportCount: reportCount, duration: duration, rate: (int)rate, test: 'reports']
 	}
 	
@@ -259,6 +261,8 @@ class GetReportsController
 		def duration = end - start
 		def reportCount = reportIds.size()
 		def rate = reportCount*1000L*3600L/duration
+		
+		println "Finished in ${duration/1000} seconds"
 
 		render template: 'loadTestExistingReports', model: [status: status, reportCount: reportCount, duration: duration, rate: (int)rate, test: 'reportModels']
 	}
@@ -416,6 +420,8 @@ class GetReportsController
 		def duration = end - start
 		def reportCount = reportIds.size()
 		def rate = reportCount*1000L*3600L/duration
+		
+		println "Finished in ${duration/1000} seconds"
 
 		render template: 'loadTestExistingReports', model: [status: status, reportCount: reportCount, duration: duration, rate: (int)rate, reportsWithNoData: reportsWithNoData, test: 'reportModelQuestions']
 	}

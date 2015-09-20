@@ -111,6 +111,8 @@ class PostSurveysController
 		def rate = savedSurveys*1000L*3600L/duration
 		def errorSurveys = surveyCount - savedSurveys
 		
+		println "Finished in ${duration/1000} seconds"
+		
 		sampleSurveys.clear()
 		System.gc()
 		
@@ -161,6 +163,8 @@ class PostSurveysController
 		def surveyCount = json.data.size()
 		def duration = end - start
 		def rate = surveyCount*1000L*3600L/duration
+		
+		println "Finished in ${duration/1000} seconds"
 		
 		render template: 'postSurveys', model: [status: status, surveyCount: surveyCount, totalSurveys: totalSurveys, duration: duration, rate: (int)rate, test: 'surveys']
 	}

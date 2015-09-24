@@ -37,9 +37,9 @@ class PostSurveysController
 	// TODO: allow posting more than 5000 surveys by using a for loop, generating 5000 survey objects in memory at a time, then clearing the collection before the next batch, etc.
 	def loadTestPostSurveys()
 	{
-		println params
+		log.info params
 		def url = getBaseUrl(params.host, params.port) + '/v1/services/survey'
-		println url
+		log.info url
 		
 		app = params.appName
 		appKey = params.appKey
@@ -67,9 +67,9 @@ class PostSurveysController
 		// counts surveys successfully saved
 		def savedSurveys = 0
 		
-		println "Using $sthreads thread(s) to post ${surveyCount} surveys"
+		log.info "Using $sthreads thread(s) to post ${surveyCount} surveys"
 		
-		println "Starting timer..."
+		log.info "Starting timer..."
 		def start = System.currentTimeMillis()
 		
 		// POST survey data in parallel by calling the endpoint via a thread pool
@@ -105,13 +105,13 @@ class PostSurveysController
 		}
 
 		def end = System.currentTimeMillis()
-		println "Ending timer"
+		log.info "Ending timer"
 		
 		def duration = end - start
 		def rate = savedSurveys*1000L*3600L/duration
 		def errorSurveys = surveyCount - savedSurveys
 		
-		println "Finished in ${duration/1000} seconds"
+		log.info "Finished in ${duration/1000} seconds"
 		
 		sampleSurveys.clear()
 		System.gc()
@@ -125,9 +125,9 @@ class PostSurveysController
 	 */
 	def loadTestExistingSurveys()
 	{
-		println params
+		log.info params
 		def url = getBaseUrl(params.host, params.port) + '/v1/surveys?max=50'
-		println url
+		log.info url
 		
 		app = params.appName
 		appKey = params.appKey
@@ -164,7 +164,7 @@ class PostSurveysController
 		def duration = end - start
 		def rate = surveyCount*1000L*3600L/duration
 		
-		println "Finished in ${duration/1000} seconds"
+		log.info "Finished in ${duration/1000} seconds"
 		
 		render template: 'postSurveys', model: [status: status, surveyCount: surveyCount, totalSurveys: totalSurveys, duration: duration, rate: (int)rate, test: 'surveys']
 	}

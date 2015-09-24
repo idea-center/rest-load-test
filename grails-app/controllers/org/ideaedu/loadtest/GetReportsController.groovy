@@ -64,7 +64,7 @@ class GetReportsController
 	 */
 	def loadTestExistingReports()
 	{
-		println params
+		log.info params
 		def url = getBaseUrl(params.host, params.port) + '/v1/reports'
 		
 		app = params.appName
@@ -101,8 +101,8 @@ class GetReportsController
 		def duration = end - start
 		def rate = reportCount*1000L*3600L/duration
 		def totalReports = json.total_results
-		println json
-		println "Finished in ${duration/1000} seconds"
+		log.info json
+		log.info "Finished in ${duration/1000} seconds"
 		
 		render template: 'loadTestExistingReports', model: [status: status, reportCount: reportCount, duration: duration, rate: (int)rate, totalReports: totalReports, test: 'reports']
 	}
@@ -116,7 +116,7 @@ class GetReportsController
 	 */
 	def getSurveyIds(test, app, appKey, maxSurveyIds)
 	{
-		println 'Looking for survey IDs...'
+		log.info 'Looking for survey IDs...'
 		
 		def page = 0
 		def surveyIds = [] as Set
@@ -171,7 +171,7 @@ class GetReportsController
 	 */
 	def loadTestExistingReportModels()
 	{
-		println params
+		log.info params
 		def url = getBaseUrl(params.host, params.port) + '/v1/reports'
 		
 		app = params.appName
@@ -190,15 +190,15 @@ class GetReportsController
 			return
 		}
 		
-		println "Found ${surveyIds.size()} unique survey IDs"
+		log.info "Found ${surveyIds.size()} unique survey IDs"
 		
 		def rthreads = params.reportThreads ?: REPORT_MODEL_THREADS
 		rthreads = rthreads as int
 		if (rthreads < 1) rthreads = REPORT_MODEL_THREADS
 		
-		println "Utilizing ${rthreads} thread${rthreads > 1 ? 's' : ''} to retrieve the report models"
+		log.info "Utilizing ${rthreads} thread${rthreads > 1 ? 's' : ''} to retrieve the report models"
 		
-		println "Starting timer..."
+		log.info "Starting timer..."
 		def start = System.currentTimeMillis()
 		
 		def response
@@ -235,7 +235,7 @@ class GetReportsController
 			}
 		}
 		
-		println "Found ${reportIds.size()} unique report IDs"
+		log.info "Found ${reportIds.size()} unique report IDs"
 		
 		// call the GET /report/:id/model endpoint in parallel
 		// an alternative to GParsPool.withPool is GParsPool.withExecutorPool; former is more efficient, latter might be safer - to investigate
@@ -262,12 +262,12 @@ class GetReportsController
 		}
 		
 		def end = System.currentTimeMillis()
-		println "Ending timer"
+		log.info "Ending timer"
 		def duration = end - start
 		def reportCount = reportIds.size()
 		def rate = reportCount*1000L*3600L/duration
 		
-		println "Finished in ${duration/1000} seconds"
+		log.info "Finished in ${duration/1000} seconds"
 
 		render template: 'loadTestExistingReports', model: [status: status, reportCount: reportCount, duration: duration, rate: (int)rate, test: 'reportModels']
 	}
@@ -278,7 +278,7 @@ class GetReportsController
 	 */
 	def loadTestExistingReportModelsAndQuestions()
 	{
-		println params
+		log.info params
 		def url = getBaseUrl(params.host, params.port) + '/v1/reports'
 		
 		app = params.appName
@@ -297,7 +297,7 @@ class GetReportsController
 			return
 		}
 		
-		println "Found ${surveyIds.size()} unique survey IDs"
+		log.info "Found ${surveyIds.size()} unique survey IDs"
 		
 		def rthreads = params.reportThreads ?: REPORT_MODEL_THREADS
 		def qthreads = params.questionThreads ?: QUESTIONS_MODEL_THREADS
@@ -307,9 +307,9 @@ class GetReportsController
 		if (rthreads < 1) rthreads = REPORT_MODEL_THREADS
 		if (qthreads < 1) qthreads = QUESTIONS_MODEL_THREADS
 		
-		println "Utilizing ${rthreads} thread${rthreads > 1 ? 's' : ''} to retrieve the report models and ${qthreads} thread${qthreads > 1 ? 's' : ''} to retrieve the question models"
+		log.info "Utilizing ${rthreads} thread${rthreads > 1 ? 's' : ''} to retrieve the report models and ${qthreads} thread${qthreads > 1 ? 's' : ''} to retrieve the question models"
 		
-		println "Starting timer..."
+		log.info "Starting timer..."
 		def start = System.currentTimeMillis()
 		
 		def response
@@ -347,7 +347,7 @@ class GetReportsController
 			}
 		}
 		
-		println "Found ${reportIds.size()} unique report IDs"
+		log.info "Found ${reportIds.size()} unique report IDs"
 		
 		def reportModelsAndQuestions = [:]
 		
@@ -425,12 +425,12 @@ class GetReportsController
 		}
 		
 		def end = System.currentTimeMillis()
-		println "Ending timer"
+		log.info "Ending timer"
 		def duration = end - start
 		def reportCount = reportIds.size()
 		def rate = reportCount*1000L*3600L/duration
 		
-		println "Finished in ${duration/1000} seconds"
+		log.info "Finished in ${duration/1000} seconds"
 
 		render template: 'loadTestExistingReports', model: [status: status, reportCount: reportCount, duration: duration, rate: (int)rate, reportsWithNoData: reportsWithNoData, test: 'reportModelQuestions']
 	}

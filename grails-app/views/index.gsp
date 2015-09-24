@@ -50,22 +50,25 @@
 						<div class="row form-group">
 							<g:submitToRemote class="btn btn-primary submit" value="Test GET Reports" id="test-get-reports" url="[controller: 'getReports', action: 'loadTestExistingReports']" method="GET" update="get-reports-results" />
 						</div>
-						<div class="row hide" id="get-reports-spinner" style="margin-top: -20px;"><asset:image src="spinner.gif"></asset:image></div>
+						
 						<div class="row results" id="get-reports-results"></div>
+						<div class="row hide" id="get-reports-spinner" style="margin-top: -20px;"><asset:image src="spinner.gif"></asset:image></div>
 						
 						<div class="row form-group">
 							<g:submitToRemote class="btn btn-primary submit" value="Test GET Report Models" id="test-get-report-models" url="[controller: 'getReports', action: 'loadTestExistingReportModels']" method="GET" 
 											update="get-report-models-results" />
 						</div>
-						<div class="row hide" id="get-report-models-spinner" style="margin-top: -20px;"><asset:image src="spinner.gif"></asset:image></div>
+						
 						<div class="row results" id="get-report-models-results"></div>
+						<div class="row hide" id="get-report-models-spinner" style="margin-top: -20px;"><asset:image src="spinner.gif"></asset:image></div>
 						
 						<div class="row form-group">
 							<g:submitToRemote class="btn btn-primary submit" value="Test GET Report Models with Questions" id="test-get-report-models-questions" url="[controller: 'getReports', action: 'loadTestExistingReportModelsAndQuestions']" 
 											method="GET" update="get-report-models-questions-results" />
 						</div>
-						<div class="row hide" id="get-report-models-questions-spinner" style="margin-top: -20px;"><asset:image src="spinner.gif"></asset:image></div>
+						
 						<div class="row results" id="get-report-models-questions-results"></div>
+						<div class="row hide" id="get-report-models-questions-spinner" style="margin-top: -20px;"><asset:image src="spinner.gif"></asset:image></div>
 					</div>
 					
 					<div class="col-lg-6" id="surveysTesting">
@@ -82,6 +85,7 @@
 							<g:submitToRemote class="btn btn-primary submit" value="Test GET Surveys" id="test-get-surveys" url="[controller: 'postSurveys', action: 'loadTestExistingSurveys']" method="GET" 
 									update="get-surveys-results" />
 						</div>
+						
 						<div class="row results" id="get-surveys-results"></div>
 						<div class="hide" id="get-surveys-spinner" style="margin-top: -20px;"><asset:image src="spinner.gif"></asset:image></div>
 						
@@ -89,6 +93,7 @@
 							<g:submitToRemote class="btn btn-primary submit" value="Test POST Surveys" id="test-post-surveys" url="[controller: 'postSurveys', action: 'loadTestPostSurveys']" method="POST" 
 									update="post-surveys-results" />
 						</div>
+						
 						<div class="row results" id="post-surveys-results"></div>
 						<div class="hide" id="post-surveys-spinner" style="margin-top: -20px;"><asset:image src="spinner.gif"></asset:image></div>
 					</div>

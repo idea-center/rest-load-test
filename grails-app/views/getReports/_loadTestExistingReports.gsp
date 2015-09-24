@@ -8,8 +8,12 @@
 	<g:set var="decimals" value="0" />
 </g:else>
 
-<span>Number of reports: ${reportCount}</span>
+<span>Number of reports read: ${reportCount}</span>
 <br>
+<g:if test="${test == 'reports'}">
+	<span>Number of reports on server: ${totalReports}</span>
+	<br>
+</g:if>
 <g:if test="${reportsWithNoData}">
 	<span class="text-danger">Number of reports with no question data: ${reportsWithNoData}</span><br>
 </g:if>

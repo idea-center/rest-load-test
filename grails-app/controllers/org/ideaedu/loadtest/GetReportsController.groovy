@@ -100,10 +100,11 @@ class GetReportsController
 		def reportCount = json.data.size()
 		def duration = end - start
 		def rate = reportCount*1000L*3600L/duration
-		
+		def totalReports = json.total_results
+		println json
 		println "Finished in ${duration/1000} seconds"
 		
-		render template: 'loadTestExistingReports', model: [status: status, reportCount: reportCount, duration: duration, rate: (int)rate, test: 'reports']
+		render template: 'loadTestExistingReports', model: [status: status, reportCount: reportCount, duration: duration, rate: (int)rate, totalReports: totalReports, test: 'reports']
 	}
 	
 	/**

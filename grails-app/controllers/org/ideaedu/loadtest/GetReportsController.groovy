@@ -114,7 +114,7 @@ class GetReportsController
 	 * @param appKey
 	 * @return
 	 */
-	def getSurveyIds(test, app, appKey)
+	def getSurveyIds(test, app, appKey, maxSurveyIds)
 	{
 		println 'Looking for survey IDs...'
 		
@@ -125,14 +125,14 @@ class GetReportsController
 		def status
 		def json
 		
-		def maxSurveyIds = params.reportCount ?: MAX_SURVEY_IDS_TO_GET
+		/*def maxSurveyIds = params.reportCount ?: MAX_SURVEY_IDS_TO_GET
 		maxSurveyIds = maxSurveyIds as int
-		if (maxSurveyIds < 1) maxSurveyIds = MAX_SURVEY_IDS_TO_GET
+		if (maxSurveyIds < 1) maxSurveyIds = MAX_SURVEY_IDS_TO_GET*/
 		
 		// read survey ids from the server until the maximum number (from params) is reached, or until there are no more surveys available (the loop passes increasing values for the page param)
 		while (surveyIds.size() < maxSurveyIds && pageResults != [])
 		{
-			def url = getUrlForPage(getBaseUrl(params.host, params.port) + "/v1/reports", page)
+			def url = getUrlForPage(getBaseUrl(params.host, params.port) + "/v1/reports?max=${maxSurveyIds}", page)
 			
 			try
 			{
@@ -177,8 +177,12 @@ class GetReportsController
 		app = params.appName
 		appKey = params.appKey
 		
+		def maxSurveyIds = params.reportCount ?: MAX_SURVEY_IDS_TO_GET
+		maxSurveyIds = maxSurveyIds as int
+		if (maxSurveyIds < 1) maxSurveyIds = MAX_SURVEY_IDS_TO_GET
+		
 		// get the collection of survey ids to use in getting reports
-		def surveyIds = getSurveyIds('reportModels', app, appKey)
+		def surveyIds = getSurveyIds('reportModels', app, appKey, maxSurveyIds)
 		
 		if (!surveyIds)
 		{
@@ -280,8 +284,12 @@ class GetReportsController
 		app = params.appName
 		appKey = params.appKey
 		
+		def maxSurveyIds = params.reportCount ?: MAX_SURVEY_IDS_TO_GET
+		maxSurveyIds = maxSurveyIds as int
+		if (maxSurveyIds < 1) maxSurveyIds = MAX_SURVEY_IDS_TO_GET
+		
 		// get the collection of survey ids to use in getting reports
-		def surveyIds = getSurveyIds('reportModelQuestions', app, appKey)
+		def surveyIds = getSurveyIds('reportModelQuestions', app, appKey, maxSurveyIds)
 		
 		if (!surveyIds)
 		{

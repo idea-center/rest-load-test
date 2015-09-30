@@ -26,7 +26,7 @@
 <br>
 <g:if test="${duration > 0 && surveyCount > 0}">
 	<span>Average: <g:formatNumber number="${duration/surveyCount}" type="number" minFractionDigits="${decimals}" maxFractionDigits="${decimals}" /> ms/survey, 
-			or <g:formatNumber number="${rate}" format="###,###" /> surveys/hour</span>
+			or <b><g:formatNumber number="${rate}" format="###,###" /></b> surveys/hour</span>
 </g:if>
 
 <g:if test="${test == 'surveys'}">

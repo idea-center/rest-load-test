@@ -21,7 +21,7 @@
 <br>
 <g:if test="${duration > 0 && reportCount > 0}">
 	<span>Average: <g:formatNumber number="${duration/reportCount}" type="number" minFractionDigits="${decimals}" maxFractionDigits="${decimals}" /> ms/report, 
-			or <g:formatNumber number="${rate}" format="###,###" /> reports/hour</span>
+			or <b><g:formatNumber number="${rate}" format="###,###" /></b> reports/hour</span>
 </g:if>
 
 <g:if test="${test == 'reports'}">

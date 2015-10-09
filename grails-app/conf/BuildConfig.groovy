@@ -1,11 +1,11 @@
-grails.servlet.version = "3.0" // Change depending on target container compliance (2.5 or 3.0)
+grails.servlet.version = "3.0"
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 grails.project.work.dir = "target/work"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
-//grails.project.war.file = "target/${appName}-${appVersion}.war"
+grails.project.war.file = "target/${appName}-${appVersion}.war"
 
 grails.project.fork = [
     // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required
@@ -79,6 +79,10 @@ grails.project.dependency.resolution =
         runtime ":database-migration:1.4.0"
         runtime ":jquery:1.11.1"
 		runtime ':twitter-bootstrap:3.3.5'
+		
+		// needed to run with Angular on AWS
+		runtime ":cors:1.1.8"
+		//runtime ":angular-template-asset-pipeline:2.2.2"
 
         // Uncomment these to enable additional asset-pipeline capabilities
         //compile ":sass-asset-pipeline:1.9.0"

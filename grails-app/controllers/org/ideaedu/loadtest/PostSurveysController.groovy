@@ -89,6 +89,7 @@ class PostSurveysController
 							header 'X-IDEA-APPNAME', app
 							header 'X-IDEA-KEY', appKey
 							header 'Content-Type', jsonContent
+							header 'Connection', 'keep-alive'
 							json 	surveyData.toJSON()
 						}
 	
@@ -107,6 +108,17 @@ class PostSurveysController
 		def end = System.currentTimeMillis()
 		log.info "Ending timer"
 		
+		/*if (status != 200)
+		{
+			if (params.isAngular)
+			{
+				def resp = [status: status, test: 'postSurveys']
+				render resp as JSON
+			}
+			else render template: 'error', model: [status: status, test: 'surveys']
+			return
+		}*/
+		
 		def duration = end - start
 		def rate = savedSurveys*1000L*3600L/duration
 		def errorSurveys = surveyCount - savedSurveys
@@ -116,7 +128,12 @@ class PostSurveysController
 		sampleSurveys.clear()
 		System.gc()
 		
-		render template: 'postSurveys', model: [status: status, surveyCount: savedSurveys, errorSurveys: errorSurveys, duration: duration, rate: (int)rate, test: 'postSurveys']
+		if (params.isAngular)
+		{
+			def resp = [status: status, surveyCount: savedSurveys, errorSurveys: errorSurveys, duration: duration, rate: (int)rate, test: 'postSurveys']
+			render resp as JSON
+		}
+		else render template: 'postSurveys', model: [status: status, surveyCount: savedSurveys, errorSurveys: errorSurveys, duration: duration, rate: (int)rate, test: 'postSurveys']
 	}
 	
 	/**
@@ -142,6 +159,7 @@ class PostSurveysController
 			response = restBuilder.get(url) {
 				header 'X-IDEA-APPNAME', app
 				header 'X-IDEA-KEY', appKey
+				header 'Connection', 'keep-alive'
 			}
 			status = response.status
 		}
@@ -154,7 +172,12 @@ class PostSurveysController
 		
 		if (status != 200)
 		{
-			render template: 'error', model: [status: status, test: 'surveys']
+			if (params.isAngular)
+			{
+				def resp = [status: status, test: 'surveys']
+				render resp as JSON
+			}
+			else render template: 'error', model: [status: status, test: 'surveys']
 			return
 		}
 		
@@ -166,7 +189,12 @@ class PostSurveysController
 		
 		log.info "Finished in ${duration/1000} seconds"
 		
-		render template: 'postSurveys', model: [status: status, surveyCount: surveyCount, totalSurveys: totalSurveys, duration: duration, rate: (int)rate, test: 'surveys']
+		if (params.isAngular)
+		{
+			def resp = [status: status, surveyCount: surveyCount, totalSurveys: totalSurveys, duration: duration, rate: (int)rate, test: 'surveys']
+			render resp as JSON
+		}
+		else render template: 'postSurveys', model: [status: status, surveyCount: surveyCount, totalSurveys: totalSurveys, duration: duration, rate: (int)rate, test: 'surveys']
 	}
 	
 	/**

@@ -14,8 +14,11 @@
 		<asset:javascript src="application.js"/>
 		<g:layoutHead/>
 	</head>
-	<body>
-		<g:layoutBody/>
+	<body ng-app="ideaRestLoadTest">
+		<div class="container" id="page-body" role="main">
+			<div class="header well"><h4>IDEA REST SERVER Load Test Application</h4></div>
+			<g:layoutBody/>
+		</div>
 		<div class="footer" role="contentinfo"></div>
 	</body>
 </html>

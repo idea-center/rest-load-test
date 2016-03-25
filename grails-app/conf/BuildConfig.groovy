@@ -37,6 +37,11 @@ grails.project.dependency.resolution =
     repositories
 	{
         inherits true // Whether to inherit repository definitions from plugins
+		
+		mavenRepo "http://day.idea.home:8080/artifactory/libs-release"
+		mavenRepo("http://day.idea.home:8080/artifactory/libs-snapshot") {
+			updatePolicy "always" // Default is "daily". See http://grails.github.io/grails-doc/2.4.4/guide/conf.html#changingDependencies
+		}
 
         grailsPlugins()
         grailsHome()
@@ -55,7 +60,7 @@ grails.project.dependency.resolution =
         // runtime 'mysql:mysql-connector-java:5.1.29'
         // runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
         test "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
-		compile 'idea:REST_MODELS:1.9.0-SNAPSHOT'
+		compile 'org.ideaedu:rest-models:1.9.0'
 		//compile 'com.google.caliper:caliper:1.0-beta-2'
 		//compile 'ch.ledcom.tomcat.valves:tomcat-valves:0.1'
 		//compile 'eu.danieldk.dictomaton:dictomaton:1.1.1'

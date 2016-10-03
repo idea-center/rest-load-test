@@ -60,7 +60,7 @@ grails.project.dependency.resolution =
         // runtime 'mysql:mysql-connector-java:5.1.29'
         // runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
         test "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
-		compile 'org.ideaedu:rest-models:1.9.0'
+		compile 'org.ideaedu:rest-models:1.10.0'
 		//compile 'com.google.caliper:caliper:1.0-beta-2'
 		//compile 'ch.ledcom.tomcat.valves:tomcat-valves:0.1'
 		//compile 'eu.danieldk.dictomaton:dictomaton:1.1.1'

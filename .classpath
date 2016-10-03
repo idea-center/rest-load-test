@@ -169,5 +169,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.grails.ide.eclipse.core.CLASSPATH_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="GROOVY_SUPPORT"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/REST_MODELS"/>
 	<classpathentry kind="output" path="target-eclipse/classes"/>
 </classpath>

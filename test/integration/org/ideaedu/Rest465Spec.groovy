@@ -2,357 +2,569 @@ package org.ideaedu
 
 import grails.plugins.rest.client.RestBuilder
 import grails.test.spock.IntegrationSpec
+import spock.lang.Ignore
 
 class Rest465Spec extends IntegrationSpec
 {
 	def restBuilder = new RestBuilder()
 	
-	def host = 'reststage.ideasystem.org'
-	def port = 80
+	def host = 'resthome.ideasystem.org'
 	def app = 'IOL3'
 	def appKey = '872ttyu8d47a07c6330430lkq39500c5072bp822'
-	
-	def baseUrl = "http://${host}:${port}/IDEA-REST-SERVER"
-	
+	def baseUrl = "https://${host}/IDEA-REST-SERVER"
 	def reportsUrl = baseUrl + '/v1/report'
 	
 	def response
 	def status
 
+	//@Ignore
 	void "test admin report counts"()
 	{
 		given:
-		def surveyIds = [7, 9, 11]
 		def admin5scale = (95..104) + (120..121)
 		def admin7scale = 105..119
+		def reportsTested = 0
+		def validReports = []
+		def start = System.currentTimeMillis()
 		
-		surveyIds.each
-		{
-			surveyId ->
-			def qModelUrls = admin5scale.collect {"$reportsUrl/$surveyId/model/$it"} + admin7scale.collect {"$reportsUrl/$surveyId/model/$it"}
-			
-			qModelUrls.each
-			{
-				when:
-				try
-				{
-					println it
-					response = restBuilder.get(it) {
+		and:
+		def adminReportsUrl = "${reportsUrl}s?type=admin&max=20"
+		
+		def reportIds = restBuilder.get(adminReportsUrl) {
 						header 'X-IDEA-APPNAME', app
 						header 'X-IDEA-KEY', appKey
 						header 'Connection', 'keep-alive'
-					}
-					status = response.status
-				}
-				catch(e)
+					}.json.data*.id
+		
+		reportIds.each
+		{
+			reportId ->
+			def qModelUrls = admin5scale.collect {"$reportsUrl/$reportId/model/$it"} + admin7scale.collect {"$reportsUrl/$reportId/model/$it"}
+			def modelUrl = "$reportsUrl/$reportId/model"
+			def answered = restBuilder.get(modelUrl) {
+						header 'X-IDEA-APPNAME', app
+						header 'X-IDEA-KEY', appKey
+						header 'Connection', 'keep-alive'
+					}.json.aggregate_data?.answered
+			
+			if (answered)
+			{
+				reportsTested++
+				validReports << reportId
+				
+				qModelUrls.each
 				{
-					status = 'Connection timed out'
+					when:
+					try
+					{
+						response = restBuilder.get(it) {
+							header 'X-IDEA-APPNAME', app
+							header 'X-IDEA-KEY', appKey
+							header 'Connection', 'keep-alive'
+						}
+						status = response.status
+					}
+					catch(e)
+					{
+						status = 'Connection timed out'
+					}
+					
+					then:
+					def tallyResponse = response.json.tally.response
+					def tallyOmit = response.json.tally.omit
+					def tallyCJ = response.json.tally.cannot_judge
+					def tallyAll = tallyResponse + tallyOmit + tallyCJ
+					def dataMap = response.json.response_option_data_map
+					def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
+					def sumCounts = dataMap.collect{key, value -> value.count}.sum()
+					
+					def scale = dataMap.keySet().size()
+					def cjKey = scale == 7 ? '6' : '8'
+					
+					and:
+					tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
+					tallyCJ == dataMap[cjKey].count	// tally CJ count equals response map CJ count
+					tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
+					sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
+					sumPercentages <= 100.1
 				}
-				
-				then:
-				def tallyResponse = response.json.tally.response
-				def tallyOmit = response.json.tally.omit
-				def tallyCJ = response.json.tally.cannot_judge
-				def tallyAll = tallyResponse + tallyOmit + tallyCJ
-				def dataMap = response.json.response_option_data_map
-				def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
-				def sumCounts = dataMap.collect{key, value -> value.count}.sum()
-				
-				def scale = dataMap.keySet().size()
-				def cjKey = scale == 7 ? '6' : '8'
-				
-				and:
-				tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
-				tallyCJ == dataMap[cjKey].count	// tally CJ count equals response map CJ count
-				tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
-				sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
-				sumPercentages <= 100.1
 			}
 		}
+		
+		def end = System.currentTimeMillis()
+		def time = (end - start)/1000 as int
+		println "$reportsTested admin reports tested: ${validReports} in $time seconds"
 	}
 	
+	//@Ignore
 	void "test chair report counts"()
 	{
 		given:
-		def surveyIds = [13]
 		def questionIds = [310, 314, 317, 319, 321] + [303, 304, 305, 306, 312, 318, 322] + [307, 308, 311, 315, 316, 322] + [305, 308, 309, 311, 313, 320, 323]
+		def validReports = []
+		def reportsTested = 0
+		def start = System.currentTimeMillis()
 		
-		surveyIds.each
-		{
-			surveyId ->
-			def qModelUrls = questionIds.collect {"$reportsUrl/$surveyId/model/$it"}
-			
-			qModelUrls.each
-			{
-				when:
-				try
-				{
-					println it
-					response = restBuilder.get(it) {
+		and:
+		def chairReportsUrl = "${reportsUrl}s?type=chair&max=10"
+		
+		def reportIds = restBuilder.get(chairReportsUrl) {
 						header 'X-IDEA-APPNAME', app
 						header 'X-IDEA-KEY', appKey
 						header 'Connection', 'keep-alive'
-					}
-					status = response.status
-				}
-				catch(e)
+					}.json.data*.id
+				
+		reportIds.each
+		{
+			reportId ->
+			def qModelUrls = questionIds.collect {"$reportsUrl/$reportId/model/$it"}
+			def modelUrl = "$reportsUrl/$reportId/model"
+			def answered = restBuilder.get(modelUrl) {
+				header 'X-IDEA-APPNAME', app
+				header 'X-IDEA-KEY', appKey
+				header 'Connection', 'keep-alive'
+			}.json.aggregate_data?.answered
+		
+			if (answered)
+			{
+				reportsTested++
+				validReports << reportId
+				
+				qModelUrls.each
 				{
-					status = 'Connection timed out'
+					when:
+					try
+					{
+						response = restBuilder.get(it) {
+							header 'X-IDEA-APPNAME', app
+							header 'X-IDEA-KEY', appKey
+							header 'Connection', 'keep-alive'
+						}
+						status = response.status
+					}
+					catch(e)
+					{
+						status = 'Connection timed out'
+					}
+					
+					then:
+					def tallyResponse = response.json.tally.response
+					def tallyOmit = response.json.tally.omit
+					def tallyCJ = response.json.tally.cannot_judge
+					def tallyAll = tallyResponse + tallyOmit + tallyCJ
+					def dataMap = response.json.response_option_data_map
+					def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
+					def sumCounts = dataMap.collect{key, value -> value.count}.sum()
+					def cjKey = '6'
+					
+					and:
+					tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
+					tallyCJ == dataMap[cjKey].count	// tally CJ count equals response map CJ count
+					tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
+					sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
+					sumPercentages <= 100.1
 				}
-				
-				then:
-				def tallyResponse = response.json.tally.response
-				def tallyOmit = response.json.tally.omit
-				def tallyCJ = response.json.tally.cannot_judge
-				def tallyAll = tallyResponse + tallyOmit + tallyCJ
-				def dataMap = response.json.response_option_data_map
-				def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
-				def sumCounts = dataMap.collect{key, value -> value.count}.sum()
-				def cjKey = '6'
-				
-				and:
-				tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
-				tallyCJ == dataMap[cjKey].count	// tally CJ count equals response map CJ count
-				tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
-				sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
-				sumPercentages <= 100.1
 			}
 		}
+		
+		def end = System.currentTimeMillis()
+		def time = (end - start)/1000 as int
+		println "$reportsTested chair reports tested: ${validReports} in $time seconds"
 	}
 	
-	void "test diagnostic 2.1 report counts"()
+	//@Ignore
+	void "test diagnostic report counts"()
 	{
 		given:
-		def surveyIds = [15]
 		def questionIds = (451..492) + (494..497)
+		def validReports = []
+		def reportsTested = 0
+		def start = System.currentTimeMillis()
 		
-		surveyIds.each
-		{
-			surveyId ->
-			def qModelUrls = questionIds.collect {"$reportsUrl/$surveyId/model/$it"}
-			
-			qModelUrls.each
-			{
-				when:
-				try
-				{
-					println it
-					response = restBuilder.get(it) {
+		and:
+		def diagReportsUrl = "${reportsUrl}s?type=diagnostic&max=10"
+		
+		def reportIds = restBuilder.get(diagReportsUrl) {
 						header 'X-IDEA-APPNAME', app
 						header 'X-IDEA-KEY', appKey
 						header 'Connection', 'keep-alive'
-					}
-					status = response.status
-				}
-				catch(e)
+					}.json.data*.id
+		
+		reportIds.each
+		{
+			reportId ->
+			def qModelUrls = questionIds.collect {"$reportsUrl/$reportId/model/$it"}
+			def modelUrl = "$reportsUrl/$reportId/model"
+			def answered = restBuilder.get(modelUrl) {
+				header 'X-IDEA-APPNAME', app
+				header 'X-IDEA-KEY', appKey
+				header 'Connection', 'keep-alive'
+			}.json.aggregate_data?.answered
+		
+			if (answered)
+			{
+				reportsTested++
+				validReports << reportId
+				
+				qModelUrls.each
 				{
-					status = 'Connection timed out'
+					when:
+					try
+					{
+						response = restBuilder.get(it) {
+							header 'X-IDEA-APPNAME', app
+							header 'X-IDEA-KEY', appKey
+							header 'Connection', 'keep-alive'
+						}
+						status = response.status
+					}
+					catch(e)
+					{
+						status = 'Connection timed out'
+					}
+					
+					then:
+					def tallyResponse = response.json.tally.response
+					def tallyOmit = response.json.tally.omit
+					def tallyCJ = response.json.tally.cannot_judge
+					def tallyAll = tallyResponse + tallyOmit + tallyCJ
+					def dataMap = response.json.response_option_data_map
+					def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
+					def sumCounts = dataMap.collect{key, value -> value.count}.sum()
+					
+					and:
+					tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
+					tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
+					sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
+					sumPercentages <= 100.1
 				}
-				
-				then:
-				def tallyResponse = response.json.tally.response
-				def tallyOmit = response.json.tally.omit
-				def tallyCJ = response.json.tally.cannot_judge
-				def tallyAll = tallyResponse + tallyOmit + tallyCJ
-				def dataMap = response.json.response_option_data_map
-				def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
-				def sumCounts = dataMap.collect{key, value -> value.count}.sum()
-				
-				and:
-				tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
-				tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
-				sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
-				sumPercentages <= 100.1
 			}
 		}
+		
+		def end = System.currentTimeMillis()
+		def time = (end - start)/1000 as int
+		println "$reportsTested diagnostic reports tested: ${validReports} in $time seconds"
 	}
 	
+	//@Ignore
 	void "test diagnostic 2016 report counts"()
 	{
 		given:
-		def surveyIds = [17]
-		def questionIds = (499..538)
+		def reportIds = [136483, 136485]
+		def validReports = []
+		def reportsTested = 0
+		def start = System.currentTimeMillis()
 		
-		surveyIds.each
+		reportIds.each
 		{
-			surveyId ->
-			def qModelUrls = questionIds.collect {"$reportsUrl/$surveyId/model/$it"}
+			reportId ->
+			def modelUrl = "$reportsUrl/$reportId/model"
 			
-			qModelUrls.each
+			def answered = restBuilder.get(modelUrl) {
+				header 'X-IDEA-APPNAME', app
+				header 'X-IDEA-KEY', appKey
+				header 'Connection', 'keep-alive'
+			}.json.aggregate_data?.answered
+		
+			def qModelUrls = restBuilder.get(modelUrl) {
+				header 'X-IDEA-APPNAME', app
+				header 'X-IDEA-KEY', appKey
+				header 'Connection', 'keep-alive'
+			}.json?.aggregate_data?.response_data_points*.question_id.collect {"$reportsUrl/$reportId/model/$it"}
+		
+			if (answered)
 			{
-				when:
-				try
+				reportsTested++
+				validReports << reportId
+			
+				qModelUrls.each
 				{
-					println it
-					response = restBuilder.get(it) {
-						header 'X-IDEA-APPNAME', app
-						header 'X-IDEA-KEY', appKey
-						header 'Connection', 'keep-alive'
+					when:
+					try
+					{
+						response = restBuilder.get(it) {
+							header 'X-IDEA-APPNAME', app
+							header 'X-IDEA-KEY', appKey
+							header 'Connection', 'keep-alive'
+						}
+						status = response.status
 					}
-					status = response.status
+					catch(e)
+					{
+						status = 'Connection timed out'
+					}
+					
+					if (response?.json?.tally)
+					{
+						then:
+						def tallyResponse = response.json.tally.response
+						def tallyOmit = response.json.tally.omit
+						def tallyCJ = response.json.tally.cannot_judge
+						def tallyAll = tallyResponse + tallyOmit + tallyCJ
+						def dataMap = response.json.response_option_data_map
+						def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
+						def sumCounts = dataMap.collect{key, value -> value.count}.sum()
+						
+						and:
+						tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
+						tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
+						sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
+						sumPercentages <= 100.1
+					}
 				}
-				catch(e)
-				{
-					status = 'Connection timed out'
-				}
-				
-				then:
-				def tallyResponse = response.json.tally.response
-				def tallyOmit = response.json.tally.omit
-				def tallyCJ = response.json.tally.cannot_judge
-				def tallyAll = tallyResponse + tallyOmit + tallyCJ
-				def dataMap = response.json.response_option_data_map
-				def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
-				def sumCounts = dataMap.collect{key, value -> value.count}.sum()
-				
-				and:
-				tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
-				tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
-				sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
-				sumPercentages <= 100.1
 			}
 		}
+		
+		def end = System.currentTimeMillis()
+		def time = (end - start)/1000 as int
+		println "$reportsTested diagnostic 2016 reports tested: ${validReports} in $time seconds"
 	}
 	
+	//@Ignore
 	void "test short report counts"()
 	{
 		given:
-		def surveyIds = [19]
-		def questionIds = (742..759)
+		def validReports = []
+		def reportsTested = 0
+		def start = System.currentTimeMillis()
 		
-		surveyIds.each
-		{
-			surveyId ->
-			def qModelUrls = questionIds.collect {"$reportsUrl/$surveyId/model/$it"}
-			
-			qModelUrls.each
-			{
-				when:
-				try
-				{
-					println it
-					response = restBuilder.get(it) {
+		and:
+		def shortReportsUrl = "${reportsUrl}s?type=short&max=10"
+		
+		def reportIds = restBuilder.get(shortReportsUrl) {
 						header 'X-IDEA-APPNAME', app
 						header 'X-IDEA-KEY', appKey
 						header 'Connection', 'keep-alive'
-					}
-					status = response.status
-				}
-				catch(e)
+					}.json.data*.id
+		
+		reportIds.each
+		{
+			reportId ->
+			
+			def modelUrl = "$reportsUrl/$reportId/model"
+			
+			def answered = restBuilder.get(modelUrl) {
+				header 'X-IDEA-APPNAME', app
+				header 'X-IDEA-KEY', appKey
+				header 'Connection', 'keep-alive'
+			}.json?.aggregate_data?.answered
+		
+			def qModelUrls = restBuilder.get(modelUrl) {
+				header 'X-IDEA-APPNAME', app
+				header 'X-IDEA-KEY', appKey
+				header 'Connection', 'keep-alive'
+			}.json?.aggregate_data?.response_data_points*.question_id.collect {"$reportsUrl/$reportId/model/$it"}
+		
+			if (answered)
+			{
+				reportsTested++
+				validReports << reportId
+			
+				qModelUrls.each
 				{
-					status = 'Connection timed out'
+					when:
+					try
+					{
+						response = restBuilder.get(it) {
+							header 'X-IDEA-APPNAME', app
+							header 'X-IDEA-KEY', appKey
+							header 'Connection', 'keep-alive'
+						}
+						status = response.status
+					}
+					catch(e)
+					{
+						status = 'Connection timed out'
+					}
+					
+					if (response?.json?.tally)
+					{
+						then:
+						def tallyResponse = response.json.tally.response
+						def tallyOmit = response.json.tally.omit
+						def tallyCJ = response.json.tally.cannot_judge
+						def tallyAll = tallyResponse + tallyOmit + tallyCJ
+						def dataMap = response.json.response_option_data_map
+						def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
+						def sumCounts = dataMap.collect{key, value -> value.count}.sum()
+						
+						and:
+						tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
+						tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
+						sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
+						sumPercentages <= 100.1
+					}
 				}
-				
-				then:
-				def tallyResponse = response.json.tally.response
-				def tallyOmit = response.json.tally.omit
-				def tallyCJ = response.json.tally.cannot_judge
-				def tallyAll = tallyResponse + tallyOmit + tallyCJ
-				def dataMap = response.json.response_option_data_map
-				def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
-				def sumCounts = dataMap.collect{key, value -> value.count}.sum()
-				
-				and:
-				tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
-				tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
-				sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
-				sumPercentages <= 100.1
 			}
 		}
+		
+		def end = System.currentTimeMillis()
+		def time = (end - start)/1000 as int
+		println "$reportsTested short reports tested: ${validReports} in $time seconds"
 	}
 	
+	//@Ignore
 	void "test TE report counts"()
 	{
 		given:
-		def surveyIds = [21]
-		def questionIds = (799..810)
+		def validReports = []
+		def reportsTested = 0
+		def start = System.currentTimeMillis()
 		
-		surveyIds.each
-		{
-			surveyId ->
-			def qModelUrls = questionIds.collect {"$reportsUrl/$surveyId/model/$it"}
-			
-			qModelUrls.each
-			{
-				when:
-				try
-				{
-					println it
-					response = restBuilder.get(it) {
+		and:
+		def TEReportsUrl = "${reportsUrl}s?type=teaching essentials&max=10"
+		
+		def reportIds = restBuilder.get(TEReportsUrl) {
 						header 'X-IDEA-APPNAME', app
 						header 'X-IDEA-KEY', appKey
 						header 'Connection', 'keep-alive'
-					}
-					status = response.status
-				}
-				catch(e)
+					}.json.data*.id
+		
+		reportIds.each
+		{
+			reportId ->
+			def modelUrl = "$reportsUrl/$reportId/model"
+			
+			def answered = restBuilder.get(modelUrl) {
+				header 'X-IDEA-APPNAME', app
+				header 'X-IDEA-KEY', appKey
+				header 'Connection', 'keep-alive'
+			}.json?.aggregate_data?.answered
+		
+			def qModelUrls = restBuilder.get(modelUrl) {
+				header 'X-IDEA-APPNAME', app
+				header 'X-IDEA-KEY', appKey
+				header 'Connection', 'keep-alive'
+			}.json?.aggregate_data?.response_data_points*.question_id.collect {"$reportsUrl/$reportId/model/$it"}
+		
+			if (answered)
+			{
+				reportsTested++
+				validReports << reportId
+			
+				qModelUrls.each
 				{
-					status = 'Connection timed out'
+					when:
+					try
+					{
+						response = restBuilder.get(it) {
+							header 'X-IDEA-APPNAME', app
+							header 'X-IDEA-KEY', appKey
+							header 'Connection', 'keep-alive'
+						}
+						status = response.status
+					}
+					catch(e)
+					{
+						status = 'Connection timed out'
+					}
+					
+					if (response?.json?.tally)
+					{
+						then:
+						def tallyResponse = response.json.tally.response
+						def tallyOmit = response.json.tally.omit
+						def tallyCJ = response.json.tally.cannot_judge
+						def tallyAll = tallyResponse + tallyOmit + tallyCJ
+						def dataMap = response.json.response_option_data_map
+						def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
+						def sumCounts = dataMap.collect{key, value -> value.count}.sum()
+						
+						and:
+						tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
+						tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
+						sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
+						sumPercentages <= 100.1
+					}
 				}
-				
-				then:
-				def tallyResponse = response.json.tally.response
-				def tallyOmit = response.json.tally.omit
-				def tallyCJ = response.json.tally.cannot_judge
-				def tallyAll = tallyResponse + tallyOmit + tallyCJ
-				def dataMap = response.json.response_option_data_map
-				def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
-				def sumCounts = dataMap.collect{key, value -> value.count}.sum()
-				
-				and:
-				tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
-				tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
-				sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
-				sumPercentages <= 100.1
 			}
 		}
+		
+		def end = System.currentTimeMillis()
+		def time = (end - start)/1000 as int
+		println "$reportsTested TE reports tested: ${validReports} in $time seconds"
 	}
 	
+	//@Ignore
 	void "test LE report counts"()
 	{
 		given:
-		def surveyIds = [22]
-		def questionIds = (723..740)
+		def validReports = []
+		def reportsTested = 0
+		def start = System.currentTimeMillis()
 		
-		surveyIds.each
-		{
-			surveyId ->
-			def qModelUrls = questionIds.collect {"$reportsUrl/$surveyId/model/$it"}
-			
-			qModelUrls.each
-			{
-				when:
-				try
-				{
-					println it
-					response = restBuilder.get(it) {
+		and:
+		def LEReportsUrl = "${reportsUrl}s?type=learning essentials&max=10"
+		
+		def reportIds = restBuilder.get(LEReportsUrl) {
 						header 'X-IDEA-APPNAME', app
 						header 'X-IDEA-KEY', appKey
 						header 'Connection', 'keep-alive'
-					}
-					status = response.status
-				}
-				catch(e)
+					}.json.data*.id
+		
+		reportIds.each
+		{
+			reportId ->
+			def modelUrl = "$reportsUrl/$reportId/model"
+			
+			def answered = restBuilder.get(modelUrl) {
+				header 'X-IDEA-APPNAME', app
+				header 'X-IDEA-KEY', appKey
+				header 'Connection', 'keep-alive'
+			}.json?.aggregate_data?.answered
+		
+			def qModelUrls = restBuilder.get(modelUrl) {
+				header 'X-IDEA-APPNAME', app
+				header 'X-IDEA-KEY', appKey
+				header 'Connection', 'keep-alive'
+			}.json?.aggregate_data?.response_data_points*.question_id.collect {"$reportsUrl/$reportId/model/$it"}
+		
+			if (answered)
+			{
+				reportsTested++
+				validReports << reportId
+			
+				qModelUrls.each
 				{
-					status = 'Connection timed out'
+					when:
+					try
+					{
+						response = restBuilder.get(it) {
+							header 'X-IDEA-APPNAME', app
+							header 'X-IDEA-KEY', appKey
+							header 'Connection', 'keep-alive'
+						}
+						status = response.status
+					}
+					catch(e)
+					{
+						status = 'Connection timed out'
+					}
+					
+					if (response?.json?.tally)
+					{
+						then:
+						def tallyResponse = response.json.tally.response
+						def tallyOmit = response.json.tally.omit
+						def tallyCJ = response.json.tally.cannot_judge
+						def tallyAll = tallyResponse + tallyOmit + tallyCJ
+						def dataMap = response.json.response_option_data_map
+						def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
+						def sumCounts = dataMap.collect{key, value -> value.count}.sum()
+						
+						and:
+						tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
+						tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
+						sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
+						sumPercentages <= 100.1
+					}
 				}
-				
-				then:
-				def tallyResponse = response.json.tally.response
-				def tallyOmit = response.json.tally.omit
-				def tallyCJ = response.json.tally.cannot_judge
-				def tallyAll = tallyResponse + tallyOmit + tallyCJ
-				def dataMap = response.json.response_option_data_map
-				def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
-				def sumCounts = dataMap.collect{key, value -> value.count}.sum()
-				
-				and:
-				tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
-				tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
-				sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
-				sumPercentages <= 100.1
 			}
 		}
+		
+		def end = System.currentTimeMillis()
+		def time = (end - start)/1000 as int
+		println "$reportsTested LE reports tested: ${validReports} in $time seconds"
 	}
 }
 

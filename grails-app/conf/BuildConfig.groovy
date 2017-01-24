@@ -77,7 +77,8 @@ grails.project.dependency.resolution =
         compile ":asset-pipeline:1.9.9"
 		
 		// for functional testing of REST endpoints
-		compile ':rest-client-builder:2.0.3'
+		compile ':rest-client-builder:2.1.1'
+		compile "org.grails.plugins:weak-ssl:1.3"
 
         // plugins needed at runtime but not for compilation
         runtime ":hibernate4:4.3.6.1" // or ":hibernate:3.6.10.18"

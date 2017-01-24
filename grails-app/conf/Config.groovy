@@ -117,3 +117,5 @@ log4j.main = {
 	
 	info   "grails.app"
 }
+
+weakssl.trustedhosts = ['restprod.idea.home']

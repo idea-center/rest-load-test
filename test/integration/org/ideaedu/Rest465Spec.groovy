@@ -8,9 +8,9 @@ class Rest465Spec extends IntegrationSpec
 {
 	def restBuilder = new RestBuilder()
 	
-	def host = 'resthome.ideasystem.org'
-	def app = 'IOL3'
-	def appKey = '872ttyu8d47a07c6330430lkq39500c5072bp822'
+	def host = 'rest.idea.home'
+	def app = 'IDEA-CL'//'IOL3'
+	def appKey = 'YB7Wngc0Msnh'//'872ttyu8d47a07c6330430lkq39500c5072bp822'
 	def baseUrl = "https://${host}/IDEA-REST-SERVER"
 	def reportsUrl = baseUrl + '/v1/report'
 	
@@ -69,24 +69,29 @@ class Rest465Spec extends IntegrationSpec
 						status = 'Connection timed out'
 					}
 					
-					then:
-					def tallyResponse = response.json.tally.response
-					def tallyOmit = response.json.tally.omit
-					def tallyCJ = response.json.tally.cannot_judge
-					def tallyAll = tallyResponse + tallyOmit + tallyCJ
-					def dataMap = response.json.response_option_data_map
-					def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
-					def sumCounts = dataMap.collect{key, value -> value.count}.sum()
+					if (response?.json?.tally)
+					{
+						then:
+						def tallyResponse = response.json.tally.response
+						def tallyOmit = response.json.tally.omit
+						def tallyCJ = response.json.tally.cannot_judge
+						def tallyAll = tallyResponse + tallyOmit + tallyCJ
+						def dataMap = response.json.response_option_data_map
+						def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
+						def sumCounts = dataMap.collect{key, value -> value.count}.sum()
+						
+						def scale = dataMap.keySet().size()
+						def cjKey = scale == 7 ? '6' : '8'
+						
+						and:
+						assert tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
+						assert tallyCJ == dataMap[cjKey].count	// tally CJ count equals response map CJ count
+						assert tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
+						assert sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
+						assert sumPercentages <= 100.1
+					}
 					
-					def scale = dataMap.keySet().size()
-					def cjKey = scale == 7 ? '6' : '8'
 					
-					and:
-					tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
-					tallyCJ == dataMap[cjKey].count	// tally CJ count equals response map CJ count
-					tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
-					sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
-					sumPercentages <= 100.1
 				}
 			}
 		}
@@ -147,22 +152,27 @@ class Rest465Spec extends IntegrationSpec
 						status = 'Connection timed out'
 					}
 					
-					then:
-					def tallyResponse = response.json.tally.response
-					def tallyOmit = response.json.tally.omit
-					def tallyCJ = response.json.tally.cannot_judge
-					def tallyAll = tallyResponse + tallyOmit + tallyCJ
-					def dataMap = response.json.response_option_data_map
-					def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
-					def sumCounts = dataMap.collect{key, value -> value.count}.sum()
-					def cjKey = '6'
+					if (response?.json?.tally)
+					{
+						then:
+						def tallyResponse = response.json.tally.response
+						def tallyOmit = response.json.tally.omit
+						def tallyCJ = response.json.tally.cannot_judge
+						def tallyAll = tallyResponse + tallyOmit + tallyCJ
+						def dataMap = response.json.response_option_data_map
+						def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
+						def sumCounts = dataMap.collect{key, value -> value.count}.sum()
+						def cjKey = '6'
+						
+						and:
+						assert tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
+						assert tallyCJ == dataMap[cjKey].count	// tally CJ count equals response map CJ count
+						assert tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
+						assert sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
+						assert sumPercentages <= 100.1
+					}
 					
-					and:
-					tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
-					tallyCJ == dataMap[cjKey].count	// tally CJ count equals response map CJ count
-					tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
-					sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
-					sumPercentages <= 100.1
+					
 				}
 			}
 		}
@@ -223,20 +233,25 @@ class Rest465Spec extends IntegrationSpec
 						status = 'Connection timed out'
 					}
 					
-					then:
-					def tallyResponse = response.json.tally.response
-					def tallyOmit = response.json.tally.omit
-					def tallyCJ = response.json.tally.cannot_judge
-					def tallyAll = tallyResponse + tallyOmit + tallyCJ
-					def dataMap = response.json.response_option_data_map
-					def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
-					def sumCounts = dataMap.collect{key, value -> value.count}.sum()
+					if (response?.json?.tally)
+					{
+						then:
+						def tallyResponse = response.json.tally.response
+						def tallyOmit = response.json.tally.omit
+						def tallyCJ = response.json.tally.cannot_judge
+						def tallyAll = tallyResponse + tallyOmit + tallyCJ
+						def dataMap = response.json.response_option_data_map
+						def sumPercentages = dataMap.collect{key, value -> value.rate}.sum()
+						def sumCounts = dataMap.collect{key, value -> value.count}.sum()
+						
+						and:
+						assert tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
+						assert tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
+						assert sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
+						assert sumPercentages <= 100.1
+					}
 					
-					and:
-					tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
-					tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
-					sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
-					sumPercentages <= 100.1
+					
 				}
 			}
 		}
@@ -306,10 +321,10 @@ class Rest465Spec extends IntegrationSpec
 						def sumCounts = dataMap.collect{key, value -> value.count}.sum()
 						
 						and:
-						tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
-						tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
-						sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
-						sumPercentages <= 100.1
+						assert tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
+						assert tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
+						assert sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
+						assert sumPercentages <= 100.1
 					}
 				}
 			}
@@ -389,10 +404,10 @@ class Rest465Spec extends IntegrationSpec
 						def sumCounts = dataMap.collect{key, value -> value.count}.sum()
 						
 						and:
-						tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
-						tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
-						sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
-						sumPercentages <= 100.1
+						assert tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
+						assert tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
+						assert sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
+						assert sumPercentages <= 100.1
 					}
 				}
 			}
@@ -471,10 +486,10 @@ class Rest465Spec extends IntegrationSpec
 						def sumCounts = dataMap.collect{key, value -> value.count}.sum()
 						
 						and:
-						tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
-						tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
-						sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
-						sumPercentages <= 100.1
+						assert tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
+						assert tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
+						assert sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
+						assert sumPercentages <= 100.1
 					}
 				}
 			}
@@ -553,10 +568,10 @@ class Rest465Spec extends IntegrationSpec
 						def sumCounts = dataMap.collect{key, value -> value.count}.sum()
 						
 						and:
-						tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
-						tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
-						sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
-						sumPercentages <= 100.1
+						assert tallyOmit == dataMap['0'].count	// tally omit count equals response map omit count
+						assert tallyAll == sumCounts			// tally sum of numbers equals sum of all counts from response map
+						assert sumPercentages >= 99.9			// sum of rates (percentages) is 100% ± 0.1
+						assert sumPercentages <= 100.1
 					}
 				}
 			}

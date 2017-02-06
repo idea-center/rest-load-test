@@ -8,7 +8,7 @@ class Rest465Spec extends IntegrationSpec
 {
 	def restBuilder = new RestBuilder()
 	
-	def host = 'rest.idea.home'
+	def host = 'restprod.idea.home'
 	def app = 'IDEA-CL'//'IOL3'
 	def appKey = 'YB7Wngc0Msnh'//'872ttyu8d47a07c6330430lkq39500c5072bp822'
 	def baseUrl = "https://${host}/IDEA-REST-SERVER"
@@ -17,7 +17,7 @@ class Rest465Spec extends IntegrationSpec
 	def response
 	def status
 
-	//@Ignore
+	@Ignore
 	void "test admin report counts"()
 	{
 		given:
@@ -101,7 +101,7 @@ class Rest465Spec extends IntegrationSpec
 		println "$reportsTested admin reports tested: ${validReports} in $time seconds"
 	}
 	
-	//@Ignore
+	@Ignore
 	void "test chair report counts"()
 	{
 		given:
@@ -261,7 +261,7 @@ class Rest465Spec extends IntegrationSpec
 		println "$reportsTested diagnostic reports tested: ${validReports} in $time seconds"
 	}
 	
-	//@Ignore
+	@Ignore
 	void "test diagnostic 2016 report counts"()
 	{
 		given:

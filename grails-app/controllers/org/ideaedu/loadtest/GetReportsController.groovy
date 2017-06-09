@@ -30,7 +30,7 @@ class GetReportsController
 	def static QUESTIONS_MODEL_THREADS = 1
 	
 	// how many survey ids to read when testing GET report data (generally there are 2 reports per survey id)
-	def static MAX_SURVEY_IDS_TO_GET = 100
+	def static MAX_SURVEY_IDS_TO_GET = 300
 	
 	/**
 	 * Builds the correct url to call

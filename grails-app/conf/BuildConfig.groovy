@@ -6,6 +6,7 @@ grails.project.work.dir = "target/work"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 grails.project.war.file = "target/${appName}-${appVersion}.war"
+grails.server.port.http = 8077
 
 grails.project.fork = [
     // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required
@@ -60,7 +61,7 @@ grails.project.dependency.resolution =
         // runtime 'mysql:mysql-connector-java:5.1.29'
         // runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
         test "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
-		compile 'org.ideaedu:rest-models:1.10.0'
+		compile mavenRepo "http://day.idea.home:8080/artifactory/libs-snapshot"
 		//compile 'com.google.caliper:caliper:1.0-beta-2'
 		//compile 'ch.ledcom.tomcat.valves:tomcat-valves:0.1'
 		//compile 'eu.danieldk.dictomaton:dictomaton:1.1.1'
